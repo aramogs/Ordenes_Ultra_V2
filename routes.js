@@ -22,17 +22,33 @@ router.get('/crear_orden/login', (req, res) => {
 
 router.post("/crear_orden", (req, res) => {
   numeroEmpleado = req.body.user;
+
+db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {     
+if (err) {
+  res.render('index.ejs')
+}else{
+  
+if(count[0].count==0){
+  res.render('index.ejs')
+}
+else{
+
+db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {     
+  if (err) throw err;
   db.query("SELECT * FROM departamento", function (err, result1, fields) {
     if (err) throw err;
     db.query("SELECT * FROM maquinas", function (err, result2, fields) {
       if (err) throw err;
-      db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {     
-        if (err) {res.render('login.ejs'); return;};
+
         res.render('crear_orden.ejs', {
           data: result1, data2: result2, data3: result3[0].Nombre, data4: numeroEmpleado
         });
+      
+      });
       });
     });
+  }
+}
   });
 });
 
