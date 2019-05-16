@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const db = require('./public/db/conn');
 
-
 //Routes
 
 router.get('/', (req, res) => {
   res.render('index.ejs');
 });
+
 
 router.get('/login/:id', (req, res) => {
   loginId = req.params.id
@@ -16,39 +16,40 @@ router.get('/login/:id', (req, res) => {
   });
 });
 
+
 router.get('/crear_orden/login', (req, res) => {
   res.render('login.ejs');
 });
 
+
 router.post("/crear_orden", (req, res) => {
   numeroEmpleado = req.body.user;
 
-db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {     
-if (err) {
-  res.render('index.ejs')
-}else{
-  
-if(count[0].count==0){
-  res.render('index.ejs')
-}
-else{
-
-db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {     
-  if (err) throw err;
-  db.query("SELECT * FROM departamento", function (err, result1, fields) {
-    if (err) throw err;
-    db.query("SELECT * FROM maquinas", function (err, result2, fields) {
-      if (err) throw err;
-
-        res.render('crear_orden.ejs', {
-          data: result1, data2: result2, data3: result3[0].Nombre, data4: numeroEmpleado
-        });
+    db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {     
+    if (err) {
+      res.render('index.ejs')
+    }else{
       
-      });
-      });
-    });
-  }
-}
+    if(count[0].count==0){
+      res.render('index.ejs')
+    }
+    else{
+
+    db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {     
+      if (err) throw err;
+      db.query("SELECT * FROM departamento", function (err, result1, fields) {
+        if (err) throw err;
+        db.query("SELECT * FROM maquinas", function (err, result2, fields) {
+          if (err) throw err;
+
+            res.render('crear_orden.ejs', {
+              data: result1, data2: result2, data3: result3[0].Nombre, data4: numeroEmpleado
+              });         
+            });
+          });
+        });
+      }
+    }
   });
 });
 
@@ -105,6 +106,7 @@ router.post('/guardar_orden', (req, res) => {
   });
 });
 
+
 router.get('/ordenes', (req, res) => {
     db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
     WHERE (ordenes.departamento = departamento.id_departamento) 
@@ -116,40 +118,51 @@ router.get('/ordenes', (req, res) => {
       });
   });
 
-  router.post("/cerrar_orden", (req, res) => {
-            numeroEmpleado = req.body.user;
-            console.log(numeroEmpleado);
 
-            db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result1, fields) {     
-             nombreEmpleado = result1[0].Nombre;
-              if (err) {res.render('login.ejs'); return;};
-                console.log(nombreEmpleado)
+router.post("/cerrar_orden", (req, res) => {
+    numeroEmpleado = req.body.user;
+
+    db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {     
+      if (err) {
+        res.render('index.ejs')
+      }else{
+  
+      if(count[0].count==0){
+        res.render('index.ejs')
+      }else{
+
+    db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {     
+      if (err) throw err;
+      
+      nombreEmpleado=result3[0].Nombre;
+
           res.render('cerrar_orden.ejs', {
             data: numeroEmpleado, data2: nombreEmpleado
-          });
-        });
-      });
+          });      
+        });      
+      }
+    }
+  });
+});
 
-      router.post("/cerrar_orden2", (req, res) => {
 
-        numeroEmpleado = req.body.numeroEmpleado;
-        nombreEmpleado = req.body.nombreEmpleado;
-        id_orden = req.body.id_orden;
+  router.post("/cerrar_orden2", (req, res) => {
 
-        db.query(`SELECT * FROM ordenes,areas_componentes_afectados 
-                  WHERE ordenes.id_orden = ${id_orden}
-                  AND ordenes.parte_afectada = areas_componentes_afectados.id_componente`, function (err, result1, fields) {  
+    numeroEmpleado = req.body.numeroEmpleado;
+    nombreEmpleado = req.body.nombreEmpleado;
+    id_orden = req.body.id_orden;
+
+    db.query(`SELECT * FROM ordenes,areas_componentes_afectados 
+              WHERE ordenes.id_orden = ${id_orden}
+              AND ordenes.parte_afectada = areas_componentes_afectados.id_componente`, function (err, result1, fields) {  
                        
-         parteAfectada = result1[0].componente           
+      parteAfectada = result1[0].componente           
       res.render('cerrar_orden2.ejs', {
         data: {numeroEmpleado, nombreEmpleado,id_orden,parteAfectada}
         //
-      });
     });
   });
-
-
-
+});
 
 
 router.get('*', (req, res) => {
