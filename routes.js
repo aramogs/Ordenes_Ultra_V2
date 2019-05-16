@@ -114,6 +114,23 @@ router.get('/ordenes', (req, res) => {
         });
       });
 
+      router.post("/cerrar_orden2", (req, res) => {
+
+        numeroEmpleado = req.body.numeroEmpleado;
+        nombreEmpleado = req.body.nombreEmpleado;
+        id_orden = req.body.id_orden;
+
+        db.query(`SELECT * FROM ordenes,areas_componentes_afectados 
+                  WHERE ordenes.id_orden = 780
+                  AND ordenes.parte_afectada = areas_componentes_afectados.id_componente`, function (err, result1, fields) {  
+                       
+         parteAfectada = result1[0].componente           
+      res.render('cerrar_orden2.ejs', {
+        data: {numeroEmpleado, nombreEmpleado,id_orden,parteAfectada}
+      });
+    });
+  });
+
 
 
 

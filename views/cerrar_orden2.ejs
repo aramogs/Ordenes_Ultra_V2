@@ -1,0 +1,73 @@
+<% include header %>
+<% include sidebar %>
+<% include navbar %>
+
+<div class="col-md-6 col-lg-10-2">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Cerrar Orden de trabajo</h3>
+        </div>
+        <!-- form start -->
+        <form action="/cerrar_orden2" method="POST">
+            <div class="box-body">
+                <!-- form body -->
+                <div class="form-group">
+                    <label for="Titulo">Empleado</label>
+                    <input readonly type="text" class="form-control" name="nombreEmpleado" id="nombreEmpleado"
+                        value="<%=nombreEmpleado%>">
+                </div>
+
+                <div class="form-group">
+                    <label for="Titulo">Gafete</label>
+                    <input readonly type="text" class="form-control" name="numeroEmpleado" id="numeroEmpleado"
+                        value="<%=numeroEmpleado%>">
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="Titulo">Numero de orden</label>
+                        <input readonly type="text" class="form-control" name="id_orden" id="id_orden"
+                            value="<%=id_orden%>">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="Titulo">Fecha: (YYYY-MM-DD)</label>
+                        <%
+
+                                    function getDate() {
+                              var today = new Date();
+                              var dd = String(today.getDate()).padStart(2, '0');
+                              var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                              var hh = today.getHours();
+                              var m = today.getMinutes();
+                              var ss = today.getSeconds();
+                              var yyyy = today.getFullYear();
+                              today = yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + m + ':' + ss;
+                              return today;
+                            }
+                                %>
+
+                        <input readonly type="text" class="form-control" name="id_orden" id="id_orden" value="<%=getDate()%>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Titulo">Parte afectada</label>
+                    <input readonly type="text" class="form-control" name="parteAfectada" id="parteAfectada" value="<%=parteAfectada%>">
+                </div>
+                <div class="form-group">
+                    <label for="Descripcion" >Actividades realizadas(opcional):</label>
+                    <textarea type="text" class="form-control " rows="3" name="actividades"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="SubirArchivo" name="archivo">Subir Archivo</label>
+                    <input type="file" id="SubirArchivo">
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-block">Atender Orden</button>
+            <button type="button" class="btn btn-success btn-block">Cerrar Orden</button>
+
+        </form>
+    </div>
+
+    <% include footer %>
+</div>
+</body>
+</html>
