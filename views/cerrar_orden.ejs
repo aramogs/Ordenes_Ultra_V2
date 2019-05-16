@@ -15,12 +15,12 @@
                      <!-- form start -->
                         <div class="form-group">
                                 <label for="Titulo">Empleado</label>
-                                <input readonly type="text" class="form-control" id="empleado">
+                                <input readonly type="text" class="form-control" id="empleado" value="<%=data2%>">
                               </div>
 
                               <div class="form-group">
                                 <label for="Titulo">Gafete</label>
-                                <input readonly type="text" class="form-control" id="gafete">
+                                <input readonly type="text" class="form-control" id="gafete" value="<%=data%>">
                               </div>
 
                      <!-- form start -->
@@ -71,7 +71,7 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
-                    <button type="submit" class="btn btn-primary"onclick="$('form').attr('action', '/guardar_orden');">Generar orden de trabajo</button>
+                    <button type="submit" class="btn btn-primary" >Generar orden de trabajo</button>
                 </div>
             </form>
         </div>

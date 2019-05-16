@@ -21,15 +21,15 @@ router.get('/crear_orden/login', (req, res) => {
 });
 
 router.post("/crear_orden", (req, res) => {
-  username = req.body.user;
+  numeroEmpleado = req.body.user;
   db.query("SELECT * FROM departamento", function (err, result1, fields) {
     if (err) throw err;
     db.query("SELECT * FROM maquinas", function (err, result2, fields) {
       if (err) throw err;
-      db.query(`SELECT Nombre FROM empleados WHERE Gafete=${username}`, function (err, result3, fields) {     
+      db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {     
         if (err) {res.render('login.ejs'); return;};
         res.render('crear_orden.ejs', {
-          data: result1, data2: result2, data3: result3[0].Nombre, data4: username
+          data: result1, data2: result2, data3: result3[0].Nombre, data4: numeroEmpleado
         });
       });
     });
@@ -101,11 +101,18 @@ router.get('/ordenes', (req, res) => {
   });
 
   router.post("/cerrar_orden", (req, res) => {
-            console.log(req.body)
+            numeroEmpleado = req.body.user;
+            console.log(numeroEmpleado);
+
+            db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result1, fields) {     
+             nombreEmpleado = result1[0].Nombre;
+              if (err) {res.render('login.ejs'); return;};
+                console.log(nombreEmpleado)
           res.render('cerrar_orden.ejs', {
-            data: "nothing"
+            data: numeroEmpleado, data2: nombreEmpleado
           });
         });
+      });
 
 
 
