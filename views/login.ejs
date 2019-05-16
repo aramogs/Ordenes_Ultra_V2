@@ -1,0 +1,28 @@
+<% include header %>
+<% include sidebar %>
+<% include navbar %>
+
+<div class="col-md-6 col-lg-10-2">
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title">Iniciar Sesion</h3>
+    </div>
+    <form id="login" action="/<%=data%>" method="POST">
+      <div class="box-body">
+        <div class="form-group">
+          <input type="password" placeholder="Gafete" id="user" class="form-control" name="user">
+        </div>
+      </div>
+   
+    <div class="box-footer">
+      <button id="login_button" type="submit" class="btn btn-primary" >Iniciar
+        Sesion</button>
+    </div>
+  </div>
+</div>
+</form>
+
+<% include footer %>
+</div>
+</body>
+</html>
