@@ -16,7 +16,7 @@ function pagination() {$( "#target" ).keyup(function() {
   pag =  $('.pagination')
 
   pages = Math.ceil(table / 20); 
-  for (let i = 1; i < pages; i++) {
+  for (let i = 0; i < pages; i++) {
   pag.append(`
   <li class="page-item">
   <a class="page-link" href="#">${i}</a>
@@ -49,6 +49,7 @@ function pagination() {$( "#target" ).keyup(function() {
       
     }
   });
+<<<<<<< HEAD
 }
 
 //Revisar Clave de Cierre
@@ -75,7 +76,13 @@ function pagination() {$( "#target" ).keyup(function() {
     }
 
   });
+=======
+>>>>>>> 8107b23be2e332be423605c3855743f7cc561754
 
+}
 
+<<<<<<< HEAD
       
  
+=======
+>>>>>>> 8107b23be2e332be423605c3855743f7cc561754
