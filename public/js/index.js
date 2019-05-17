@@ -36,7 +36,6 @@ function getDate() {
   var clave = document.getElementById("clave").textContent;
   var btnAtender = document.getElementById("atender");
   var btnCerrar = document.getElementById("cerrar");
-  //document.getElementById("msg").innerHTML;
   txtclave.classList.add('border-danger');
 
   txtclave.addEventListener("keyup",function(e){
