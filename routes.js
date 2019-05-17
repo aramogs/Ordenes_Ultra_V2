@@ -27,11 +27,11 @@ router.post("/crear_orden", (req, res) => {
 
     db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {     
     if (err) {
-      res.render('index.ejs')
+      res.redirect('/login/crear_orden')
     }else{
       
     if(count[0].count==0){
-      res.render('index.ejs')
+      res.redirect('/login/crear_orden')
     }
     else{
 
@@ -124,11 +124,11 @@ router.post("/cerrar_orden", (req, res) => {
 
     db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {     
       if (err) {
-        res.render('index.ejs')
+        res.redirect('/login/cerrar_orden')
       }else{
   
       if(count[0].count==0){
-        res.render('index.ejs')
+        res.redirect('/login/cerrar_orden')
       }else{
 
     db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {     
@@ -146,7 +146,7 @@ router.post("/cerrar_orden", (req, res) => {
 });
 
 
-  router.post("/cerrar_orden2", (req, res) => {
+router.post("/cerrar_orden2", (req, res) => {
 
     numeroEmpleado = req.body.numeroEmpleado;
     nombreEmpleado = req.body.nombreEmpleado;
