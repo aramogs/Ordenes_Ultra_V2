@@ -77,9 +77,5 @@ function pagination() {$( "#target" ).keyup(function() {
   });
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 61293909e2855c577787d7fd49089c54a390f98f
       
  
