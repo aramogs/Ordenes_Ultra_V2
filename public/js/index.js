@@ -49,7 +49,6 @@ function pagination() {$( "#target" ).keyup(function() {
       
     }
   });
-<<<<<<< HEAD
 }
 
 //Revisar Clave de Cierre
@@ -76,13 +75,8 @@ function pagination() {$( "#target" ).keyup(function() {
     }
 
   });
-=======
->>>>>>> 8107b23be2e332be423605c3855743f7cc561754
 
-}
 
-<<<<<<< HEAD
+
       
  
-=======
->>>>>>> 8107b23be2e332be423605c3855743f7cc561754
