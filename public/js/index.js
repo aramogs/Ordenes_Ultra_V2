@@ -51,7 +51,6 @@ function pagination() {$( "#target" ).keyup(function() {
   });
 }
 
-<<<<<<< HEAD
 //Revisar Clave de Cierre
   var txtclave= document.getElementById("clave_cierre");
   var clave = document.getElementById("clave").textContent;
@@ -80,5 +79,3 @@ function pagination() {$( "#target" ).keyup(function() {
 
       
  
-=======
->>>>>>> 5d5793bf875ed1515016a59e189d3e36958b75c0
