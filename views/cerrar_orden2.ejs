@@ -8,7 +8,7 @@
             <h3 class="box-title">Cerrar Orden de trabajo</h3>
         </div>
         <!-- form start -->
-        <form  method="POST">
+        <form method="POST">
             <div class="box-body">
                 <!-- form body -->
                 <div class="form-group">
@@ -31,7 +31,6 @@
                     <div class="form-group col-md-6">
                         <label for="Titulo">Fecha: (YYYY-MM-DD)</label>
                         <%
-
                                     function getDate() {
                               var today = new Date();
                               var dd = String(today.getDate()).padStart(2, '0');
@@ -44,22 +43,23 @@
                               return today;
                             }
                                 %>
-
-                        <input readonly type="text" class="form-control" name="id_orden" id="id_orden" value="<%=getDate()%>">
+                        <input readonly type="hidden" name="current_date" id="current_date" value="<%=Date()%>">
+                        <input readonly type="text" name="formatted_current_date"class="form-control" value="<%=getDate()%>">
                     </div>
                 </div>
                 <div class="row">
-                <div class="form-group col-md-6">
-                    <label for="Titulo">Clave de cierre</label>
-                    <input  type="text" class="form-control" name="parteAfectada" id="parteAfectada" value="">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="Titulo">Parte afectada</label>
-                    <input readonly type="text" class="form-control" name="parteAfectada" id="parteAfectada" value="<%=parteAfectada%>">
-                </div>
+                    <div class="form-group col-md-6">
+                        <label for="Titulo">Clave de cierre</label>
+                        <input type="text" class="form-control" name="clave_cierre" id="clave_cierre" value="">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="Titulo">Parte afectada</label>
+                        <input readonly type="text" class="form-control" name="parteAfectada" id="parteAfectada"
+                            value="<%=parteAfectada%>">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="Descripcion" >Actividades realizadas(opcional):</label>
+                    <label for="Descripcion">Actividades realizadas(opcional):</label>
                     <textarea type="text" class="form-control " rows="3" name="actividades"></textarea>
                 </div>
                 <div class="form-group">
@@ -67,8 +67,10 @@
                     <input type="file" id="SubirArchivo">
                 </div>
             </div>
-            <button formAction="/cambio_orden/atender" type="submit" class="btn btn-primary btn-block">Atender Orden</button>
-            <button formAction="/cambio_orden/cerrar" type="submit" class="btn btn-success btn-block">Cerrar Orden</button>
+            <button formAction="/cambio_orden/atendida" type="submit" class="btn btn-primary btn-block">Atender
+                Orden</button>
+            <button formAction="/cambio_orden/cerrada" type="submit" class="btn btn-success btn-block">Cerrar
+                Orden</button>
 
         </form>
     </div>
@@ -76,4 +78,5 @@
     <% include footer %>
 </div>
 </body>
+
 </html>
