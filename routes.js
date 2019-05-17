@@ -27,11 +27,11 @@ router.post("/crear_orden", (req, res) => {
 
   db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
     if (err) {
-      res.render('index.ejs')
-    } else {
-
+      res.redirect('/login/crear_orden')
+    }else{
+      
       if (count[0].count == 0) {
-        res.render('index.ejs')
+      res.redirect('/login/crear_orden')
       }
       else {
 
@@ -52,6 +52,7 @@ router.post("/crear_orden", (req, res) => {
     }
   });
 });
+
 
 
 router.post('/crear_orden2', (req, res) => {
@@ -122,14 +123,14 @@ router.get('/ordenes', (req, res) => {
 router.post("/cerrar_orden", (req, res) => {
   numeroEmpleado = req.body.user;
 
-  db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
-    if (err) {
-      res.render('index.ejs')
-    } else {
-
-      if (count[0].count == 0) {
-        res.render('index.ejs')
-      } else {
+    db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {         
+      if (err) {
+        res.redirect('/login/cerrar_orden')
+      }else{
+  
+      if(count[0].count==0){
+        res.redirect('/login/cerrar_orden')
+      }else{
 
         db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {
           if (err) throw err;
@@ -144,6 +145,7 @@ router.post("/cerrar_orden", (req, res) => {
     }
   });
 });
+
 
 
 router.post("/cerrar_orden2", (req, res) => {
