@@ -28,10 +28,10 @@ router.post("/crear_orden", (req, res) => {
   db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
     if (err) {
       res.redirect('/login/crear_orden')
-    }else{
-      
+    } else {
+
       if (count[0].count == 0) {
-      res.redirect('/login/crear_orden')
+        res.redirect('/login/crear_orden')
       }
       else {
 
@@ -54,12 +54,12 @@ router.post("/crear_orden", (req, res) => {
 });
 
 
-
 router.post('/crear_orden2', (req, res) => {
   departamento = (req.body.departamento);
   maquina = (req.body.maquina)
   nombreEmpleado = (req.body.empleado)
   numeroEmpleado = (req.body.gafete)
+
   db.query(`SELECT * FROM areas_componentes_afectados WHERE familia_maquina = '${maquina}'`, (err, result3, fields) => {
     if (err) throw err;
 
@@ -123,14 +123,14 @@ router.get('/ordenes', (req, res) => {
 router.post("/cerrar_orden", (req, res) => {
   numeroEmpleado = req.body.user;
 
-    db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {         
-      if (err) {
+  db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
+    if (err) {
+      res.redirect('/login/cerrar_orden')
+    } else {
+
+      if (count[0].count == 0) {
         res.redirect('/login/cerrar_orden')
-      }else{
-  
-      if(count[0].count==0){
-        res.redirect('/login/cerrar_orden')
-      }else{
+      } else {
 
         db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {
           if (err) throw err;
@@ -147,26 +147,45 @@ router.post("/cerrar_orden", (req, res) => {
 });
 
 
-
 router.post("/cerrar_orden2", (req, res) => {
 
   numeroEmpleado = req.body.numeroEmpleado;
   nombreEmpleado = req.body.nombreEmpleado;
   id_orden = req.body.id_orden;
 
-  db.query(`SELECT * FROM ordenes,areas_componentes_afectados 
+  db.query(`SELECT COUNT( * ) AS count FROM ordenes WHERE id_orden=${id_orden}`, function (err, count, fields) {
+    if (err) {
+      res.redirect('/')
+    } else {
+
+      if (count[0].count == 0) {
+        res.redirect('/')
+      }
+      else {
+
+
+        db.query(`SELECT clave FROM ordenes WHERE id_orden=${id_orden}`, function (err, clave, fields) {
+          if (err) throw err;
+          id_clave = clave[0].clave
+
+          db.query(`SELECT * FROM ordenes,areas_componentes_afectados 
               WHERE ordenes.id_orden = ${id_orden}
               AND ordenes.parte_afectada = areas_componentes_afectados.id_componente`, function (err, result1, fields) {
 
-      parteAfectada = result1[0].componente
-      res.render('cerrar_orden2.ejs', {
-        data: { numeroEmpleado, nombreEmpleado, id_orden, parteAfectada }
-      });
-    });
+              parteAfectada = result1[0].componente
+              res.render('cerrar_orden2.ejs', {
+                data: { numeroEmpleado, nombreEmpleado, id_orden, parteAfectada, id_clave }
+              });
+            });
+        });
+      }
+    }
+  });
 });
 
 
 router.post('/cambio_orden/:id', (req, res) => {
+
   accionTomada = req.params.id;
   nombreEmpleado = req.body.nombreEmpleado;
   numeroEmpleado = req.body.numeroEmpleado;
@@ -176,32 +195,32 @@ router.post('/cambio_orden/:id', (req, res) => {
   clave_cierre = req.body.clave_cierre;
   parteAfectada = req.body.parteAfectada;
   actividades = req.body.actividades;
-  
 
-  db.query(`SELECT * FROM ordenes WHERE id_orden = ${id_orden}`,function (err,result,fields){
+
+  db.query(`SELECT * FROM ordenes WHERE id_orden = ${id_orden}`, function (err, result, fields) {
 
     ordenFecha = result[0].fecha_hora;
     var startDate = new Date(ordenFecha);//Fecha en que se creo la orden de trabajo
-    var endDate   = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
+    var endDate = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
     var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
-    
-  if (accionTomada == "atendida") {
-    db.query(`UPDATE ordenes SET 
+
+    if (accionTomada == "atendida") {
+      db.query(`UPDATE ordenes SET 
             status= "${accionTomada}",
             acciones_atendida= "${actividades}" ,
             fecha_hora_atendida= "${formatted_current_date}" ,
             tiempo_atendida= "${seconds}",
             usuario_atendida= "${nombreEmpleado}" 
             WHERE id_orden = ${id_orden}`, function (err, result, fields) {
-                 if (err) throw err;
+          if (err) throw err;
 
-        res.render('cambio_orden.ejs', {
-          data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
+          res.render('cambio_orden.ejs', {
+            data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
+          });
         });
-      });
 
-  } else {
-    db.query(`UPDATE ordenes SET 
+    } else {
+      db.query(`UPDATE ordenes SET 
               status= "${accionTomada}",
               fecha_hora_cierre= "${formatted_current_date}",
               usuario_cierre= "${nombreEmpleado}",
@@ -210,14 +229,15 @@ router.post('/cambio_orden/:id', (req, res) => {
               area_real_afectada= "NULL",
               parte_real_afectada= "NULL"
               WHERE id_orden = ${id_orden}`, function (err, result1, fields) {
-        res.render('cambio_orden.ejs', {
-          data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
+          res.render('cambio_orden.ejs', {
+            data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
+          });
         });
-      });
+    }
+  })
 
-  }
-})
 });
+
 
 router.get('*', (req, res) => {
   res.send('404 Page not found');
