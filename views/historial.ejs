@@ -4,11 +4,11 @@
 
 <div class="col-md-10 col-lg-10-2 col-xl-11">
     <div class="box-header">
-        <h3 class="box-title">Ordenes</h3>
+        <h3 class="box-title">Ordenes del usuario <%= data2 %></h3>
     </div>
     <!-- /.box-header -->
     <div class="table table-responsive" id="table">
-        <table id="table" class="table table-bordered table-striped">
+        <table id="myTable" class="table table-bordered table-striped">
             <thead class="thead-dark">
 
                 <th>ID</th>
@@ -51,19 +51,10 @@
                 <% } %>
             </tbody>
         </table>
-    </div>
-    <!-- Pagination -->
-    <ul class="pagination">
-    </ul>
-    <!-- ./ Pagination -->
 </div>
 
 
 <% include footer %>
-<script>
-        pagination();
-        $('#table').ddTableFilter();
-</script>
 </div>
 </body>
 

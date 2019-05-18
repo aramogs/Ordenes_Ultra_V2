@@ -13,15 +13,17 @@
             <form action="/crear_orden2" method="POST">
                 <div class="box-body">
             <!------->  
-                        <div class="form-group">
+            <div class="row">
+                        <div class="form-group col-lg-6">
                                 <label for="Titulo">Empleado</label>
                                 <input readonly type="text" class="form-control" id="empleado" value="<%= data3%>" name="empleado">
                               </div>
 
-                              <div class="form-group">
+                              <div class="form-group  col-lg-6">
                                 <label for="Titulo">Gafete</label>
                                 <input readonly type="text" class="form-control" id="gafete" value="<%= data4%>" name="gafete">
                               </div>
+                            </div>
               <!------->                
                     <div class="form-group">
                         <label for="Titulo">Departamento</label>
@@ -32,6 +34,7 @@
                             <% } %>
                         </select>
                     </div>
+                
                     <div class="form-group">
                         <label for="Titulo">Maquina</label>
                         <select class="form-control" name="maquina" id="maquina" >

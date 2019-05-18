@@ -11,16 +11,18 @@
         <form method="POST">
             <div class="box-body">
                 <!-- form body -->
-                <div class="form-group">
-                    <label for="Titulo">Empleado</label>
-                    <input readonly type="text" class="form-control" name="nombreEmpleado" id="nombreEmpleado"
-                        value="<%=nombreEmpleado%>">
-                </div>
+                <div class="row">
+                    <div class="form-group col-lg-6">
+                        <label for="Titulo">Empleado</label>
+                        <input readonly type="text" class="form-control" name="nombreEmpleado" id="nombreEmpleado"
+                            value="<%=nombreEmpleado%>">
+                    </div>
 
-                <div class="form-group">
-                    <label for="Titulo">Gafete</label>
-                    <input readonly type="text" class="form-control" name="numeroEmpleado" id="numeroEmpleado"
-                        value="<%=numeroEmpleado%>">
+                    <div class="form-group col-lg-6">
+                        <label for="Titulo">Gafete</label>
+                        <input readonly type="text" class="form-control" name="numeroEmpleado" id="numeroEmpleado"
+                            value="<%=numeroEmpleado%>">
+                    </div>
                 </div>
                 <div class="row">
                     <div class="form-group col-md-6">
@@ -44,12 +46,14 @@
                             }
                                 %>
                         <input readonly type="hidden" name="current_date" id="current_date" value="<%=Date()%>">
-                        <input readonly type="text" name="formatted_current_date"class="form-control" value="<%=getDate()%>">
+                        <input readonly type="text" name="formatted_current_date" class="form-control"
+                            value="<%=getDate()%>">
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="Titulo">Clave de cierre:</label> <label id="msg"> </label>    <label id="clave" hidden><%=id_clave%></label>
+                        <label for="Titulo">Clave de cierre:</label> <label id="msg"> </label> <label id="clave"
+                            hidden><%=id_clave%></label>
                         <input type="text" class="form-control" name="clave_cierre" id="clave_cierre" value="">
                     </div>
                     <div class="form-group col-md-6">
@@ -67,9 +71,11 @@
                     <input type="file" id="SubirArchivo">
                 </div>
             </div>
-            <button formAction="/cambio_orden/atendida" type="submit" class="btn btn-primary btn-block" id="atender" disabled>Atender
+            <button formAction="/cambio_orden/atendida" type="submit" class="btn btn-primary btn-block" id="atender"
+                disabled>Atender
                 Orden</button>
-            <button formAction="/cambio_orden/cerrada" type="submit" class="btn btn-success btn-block" id="cerrar" disabled>Cerrar
+            <button formAction="/cambio_orden/cerrada" type="submit" class="btn btn-success btn-block" id="cerrar"
+                disabled>Cerrar
                 Orden</button>
 
         </form>
