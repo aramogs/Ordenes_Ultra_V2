@@ -8,7 +8,7 @@
     </div>
     <!-- /.box-header -->
     <div class="table table-responsive" id="table">
-        <table id="example1" class="table table-bordered table-striped">
+        <table id="table" class="table table-bordered table-striped">
             <thead class="thead-dark">
 
                 <th>ID</th>
@@ -21,6 +21,7 @@
                 <th>Grupo</th>
                 <th>Fecha</th>
                 <th>Status</th>
+                <th>Clave de cierre</th>
                 <th>Tipo</th>
 
             </thead>
@@ -43,6 +44,7 @@
                     <td><%= data[i].grupo %></td>
                     <td><%= formatted_date %></td>
                     <td><%= data[i].status %></td>
+                    <td><%= data[i].clave %></td>
                     <td><%= data[i].tipo_orden %></td>
                 </tr>
                 <% } %>
@@ -59,8 +61,8 @@
 
 <% include footer %>
 <script>
-    pagination();
-    $('#table').ddTableFilter();
+        pagination();
+        $('#table').ddTableFilter();
 </script>
 </div>
 </body>
