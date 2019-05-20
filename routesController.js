@@ -188,7 +188,7 @@ controller.cerrar_orden2_POST = (req, res) => {
 
                 db.query(`SELECT status FROM ordenes WHERE id_orden=${id_orden}`, function (err, result2, fields) {
                     if (err) throw err;
-                    status=result2[0].status
+                    status = result2[0].status
                     db.query(`SELECT clave FROM ordenes WHERE id_orden=${id_orden}`, function (err, clave, fields) {
                         if (err) throw err;
                         id_clave = clave[0].clave
@@ -301,11 +301,11 @@ controller.historial_POST = (req, res) => {
 
                                     res.render('historial.ejs', {
                                         data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }, data3: numeroEmpleado
+                                    });
                                 });
                             });
                         });
                     });
-                });
             }
         }
     });
@@ -316,31 +316,31 @@ controller.revisar_POST = (req, res) => {
     id_orden = req.params.id
 
 
-        db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
+    db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
       WHERE (ordenes.departamento = departamento.id_departamento) 
       AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) AND ordenes.id_orden = "${id_orden}"`, function (err, result, fields) {
             if (err) throw err;
 
-        nombreEmpleado = result[0].usuario_dominio;
-        numeroEmpleado = result[0].reporto;
-        parteAfectada = result[0].componente;
-        descripcionProblema = result[0].descripcion_problema;
-        creacionFecha = result[0].fecha_hora; //Fecha sin formato
-        departamento = result[0].nombre;
-        nombrEncargado = result[0].usuario_atendida;
-        nombreCierre = result[0].usuario_cierre;
-        atendidaFecha = result[0].fecha_hora_atendida;
-        cierreFecha = result[0].fecha_hora_cierre;
-        accionAtendida = result[0].acciones_atendida;
-        accionCierre = result[0].acciones_cierre;
-        clave_cierre = result[0].clave;  
-    });
+            nombreEmpleado = result[0].usuario_dominio;
+            numeroEmpleado = result[0].reporto;
+            parteAfectada = result[0].componente;
+            descripcionProblema = result[0].descripcion_problema;
+            creacionFecha = result[0].fecha_hora; //Fecha sin formato
+            departamento = result[0].nombre;
+            nombrEncargado = result[0].usuario_atendida;
+            nombreCierre = result[0].usuario_cierre;
+            atendidaFecha = result[0].fecha_hora_atendida;
+            cierreFecha = result[0].fecha_hora_cierre;
+            accionAtendida = result[0].acciones_atendida;
+            accionCierre = result[0].acciones_cierre;
+            clave_cierre = result[0].clave;
 
 
-    res.render('revisar.ejs', {
-        data: {id_orden, descripcionProblema,accionAtendida,accionCierre,nombreEmpleado,departamento,numeroEmpleado,creacionFecha,cierreFecha,clave_cierre,parteAfectada,nombrEncargado,nombreCierre,atendidaFecha}
-    });
 
+            res.render('revisar.ejs', {
+                data: { id_orden, descripcionProblema, accionAtendida, accionCierre, nombreEmpleado, departamento, numeroEmpleado, creacionFecha, cierreFecha, clave_cierre, parteAfectada, nombrEncargado, nombreCierre, atendidaFecha }
+            });
+        });
 };
 
 module.exports = controller;
