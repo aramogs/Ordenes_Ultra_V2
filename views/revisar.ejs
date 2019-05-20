@@ -1,0 +1,55 @@
+<% include header %>
+<% include sidebar %>
+<% include navbar %>
+
+<div class="col-xl-12 jumbotron jumbotron-fluid">
+    <div class="container">
+        <img src="/img/TristoneLogo.png" class="rounded mx-auto d-block" alt="Tristone Flowtech">
+        <h1 class="display-4 text-center">Ordenes Ultra</h1>
+        <p class="lead text-center">Informacion de orden revisada</p>
+
+
+        <div class="card bg-light  ">
+            <div class=" card-header text-white bg-warning text-center">Informacion:</div>
+            <div class="card-body">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <td>ID</td>
+                            <td><%= data%></td>
+                        </tr>
+                        <tr>
+                            <td>Departamento</td>
+                            <td><%= data.departamento%></td>
+                        </tr>
+                        <tr>
+                            <td>Maquina</td>
+                            <td><%= data.maquina%></td>
+                        </tr>
+                        <tr>
+                            <td>Turno</td>
+                            <td><%= data.turno%></td>
+                        </tr>
+                        <tr>
+                            <td>Grupo</td>
+                            <td><%= data.grupo%></td>
+                        </tr>
+                        <tr>
+                            <td>Clave de cierre</td>
+                            <td><%= data.clave%></td>
+                        </tr>
+
+                        <tr>
+                            <td>Descripcion</td>
+                            <td><%= data.descripcion%></td>
+                        </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<% include footer %>
+</div>
+</body>
+
+</html>

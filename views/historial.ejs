@@ -10,8 +10,10 @@
     <div class="table table-responsive" id="table">
         <table id="myTable" class="table table-bordered table-striped">
             <thead class="thead-dark">
-
+               
+                <th>Revisar</th>
                 <th>ID</th>
+                <th>Clave</th>
                 <th>Departamento</th>
                 <th>Maquina</th>
                 <th>Parte afectada</th>
@@ -21,8 +23,8 @@
                 <th>Grupo</th>
                 <th>Fecha</th>
                 <th>Status</th>
-                <th>Clave de cierre</th>
                 <th>Tipo</th>
+                
 
             </thead>
 
@@ -34,7 +36,15 @@
                               let formatted_date = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear()
                               %>
                 <tr class="table_roww">
+
+                    <td>
+                        <form method="POST">
+                            <button type="submit" formaction="/revisar/<%= data[i].id_orden%>" class="btn btn-info">Revisar</button>
+                        </form> 
+                    </td>
+
                     <td class="table_id"><%= data[i].id_orden %></td>
+                    <td><%= data[i].clave %></td>
                     <td><%= data[i].nombre%></td>
                     <td><%= data[i].maquina %></td>
                     <td><%= data[i].componente %></td>
@@ -44,7 +54,6 @@
                     <td><%= data[i].grupo %></td>
                     <td><%= formatted_date %></td>
                     <td><%= data[i].status %></td>
-                    <td><%= data[i].clave %></td>
                     <td><%= data[i].tipo_orden %></td>
                 </tr>
                 <% } %>
