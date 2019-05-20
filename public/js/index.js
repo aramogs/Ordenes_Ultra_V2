@@ -59,12 +59,3 @@ $("#menu-toggle").click(function (e) {
     }
 
   });
-
-  m= document.getElementById('maquina');
-  m.addEventListener("change",function(e){
-console.log("fsdfsdfdsf")
-  });
-  
-
-
-

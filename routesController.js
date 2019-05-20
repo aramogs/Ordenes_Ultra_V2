@@ -59,11 +59,16 @@ controller.crear_orden2_POST = (req, res) => {
     nombreEmpleado = (req.body.empleado)
     numeroEmpleado = (req.body.gafete)
 
-    db.query(`SELECT * FROM areas_componentes_afectados WHERE familia_maquina = '${maquina}'`, (err, result3, fields) => {
+    db.query(`SELECT familia FROM maquinas WHERE nombre= '${maquina}'`, (err, result2, fields) => {
         if (err) throw err;
+        familia = result2[0].familia
 
-        res.render('crear_orden2.ejs', {
-            data: departamento, data2: maquina, data3: result3, data4: nombreEmpleado, data5: numeroEmpleado
+        db.query(`SELECT componente FROM areas_componentes_afectados WHERE familia_maquina = '${familia}'`, (err, result3, fields) => {
+            if (err) throw err;
+            
+            res.render('crear_orden2.ejs', {
+                data: departamento, data2: maquina, data3: result3, data4: nombreEmpleado, data5: numeroEmpleado
+            });
         });
     });
 };
