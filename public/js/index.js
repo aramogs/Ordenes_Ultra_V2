@@ -7,7 +7,7 @@ $( document ).ready(function() {
           } );
 
 // Ocultar boton de atenter si ya esta atendida
-          if($('#status_cerrar2').text()=='atendida'){
+          if($('#status_cerrar2').text()=='Atendida'){
           $('#atender').hide()
           }
 
