@@ -64,11 +64,13 @@ function pagination() {$( "#target" ).keyup(function() {
       $(btnCerrar).prop("disabled",false);
       txtclave.classList.remove('border-danger');
       txtclave.classList.add('border-success');
+      txtclave.classList.add('alert-success');
+
       document.getElementById("msg").innerHTML='Correcta';
     }else{
       $(btnAtender).prop("disabled",true);
       $(btnCerrar).prop("disabled",true);
-      txtclave.classList.remove('border-success');
+      txtclave.classList.remove('alert-success');
       txtclave.classList.add('border-danger');
       document.getElementById("msg").innerHTML='Incorrecta';
 
