@@ -236,7 +236,7 @@ controller.cambio_orden_POST = (req, res) => {
         var endDate = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
         var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
-        if (accionTomada == "atendida") {
+        if (accionTomada == "Atendida") {
             db.query(`UPDATE ordenes SET 
               status= "${accionTomada}",
               acciones_atendida= "${actividades}" ,
