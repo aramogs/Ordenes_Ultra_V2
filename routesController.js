@@ -1,15 +1,18 @@
+//Conexion a base de datos
 const db = require('./public/db/conn');
 const controller = {};
 
+// Index GET
 controller.index_GET = (req, res) => {
     res.render('index.ejs');
 };
 
-
+//GET Crear orden
 controller.crear_orden_GET = (req, res) => {
     res.render('login.ejs');
 };
 
+//Login
 controller.login = (req, res) => {
     loginId = req.params.id
     res.render('login.ejs', {
@@ -17,6 +20,7 @@ controller.login = (req, res) => {
     });
 };
 
+//POST a crear_orden despues de login primero revisa si el Gafete existe 
 controller.crear_orden_POST = (req, res) => {
     numeroEmpleado = req.body.user;
 
@@ -48,6 +52,7 @@ controller.crear_orden_POST = (req, res) => {
     });
 };
 
+//POST a crear_orden2 despues de crear_orden
 controller.crear_orden2_POST = (req, res) => {
     departamento = (req.body.departamento);
     maquina = (req.body.maquina)
@@ -63,6 +68,7 @@ controller.crear_orden2_POST = (req, res) => {
     });
 };
 
+//POST a guardar_orden despues de crear orden2
 controller.guardar_orden_POST = (req, res) => {
     empleado = (req.body.empleado)
     gafete = (req.body.gafete)
@@ -100,6 +106,7 @@ controller.guardar_orden_POST = (req, res) => {
     });
 };
 
+//Get tabla ordenes
 controller.ordenes_GET = (req, res) => {
     db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
       WHERE (ordenes.departamento = departamento.id_departamento) 
@@ -130,6 +137,7 @@ controller.ordenes_GET = (req, res) => {
         });
 };
 
+//POST  a cerrar_orden despues de login, revisa primero si el Gafete existe
 controller.cerrar_orden_POST = (req, res) => {
     numeroEmpleado = req.body.user;
 
@@ -161,6 +169,7 @@ controller.cerrar_orden_POST = (req, res) => {
     });
 };
 
+//POST  cerrar_orden2 despues de cerrra_orden primero revisa si la orden existe 
 controller.cerrar_orden2_POST = (req, res) => {
 
     numeroEmpleado = req.body.numeroEmpleado;
@@ -200,6 +209,7 @@ controller.cerrar_orden2_POST = (req, res) => {
     });
 };
 
+//POST a cambio_orden 
 controller.cambio_orden_POST = (req, res) => {
 
     accionTomada = req.params.id;
@@ -254,40 +264,54 @@ controller.cambio_orden_POST = (req, res) => {
 
 };
 
+//POST a historial apra generar tabla, primero revisa si el gafete existe
 controller.historial_POST = (req, res) => {
     numeroEmpleado = req.body.user;
 
-    db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
-      WHERE (ordenes.departamento = departamento.id_departamento) 
-      AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) AND (ordenes.reporto ="${numeroEmpleado}") ORDER BY id_orden DESC `, function (err, result, fields) {
-            if (err) throw err;
+    db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
+        if (err) {
+            res.redirect('/login/historial')
+        } else {
 
-            db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta"`, function (err, result2, fields) {
-                if (err) throw err;
+            if (count[0].count == 0) {
+                res.redirect('/login/historial')
+            }
+            else {
 
-
-                db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="atendida"`, function (err, result3, fields) {
-                    if (err) throw err;
-
-
-                    db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="cerrada"`, function (err, result4, fields) {
+                db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
+                WHERE (ordenes.departamento = departamento.id_departamento) 
+                AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) AND (ordenes.reporto ="${numeroEmpleado}") ORDER BY id_orden DESC `, function (err, result, fields) {
                         if (err) throw err;
 
-                        ordenesAbiertas = result2[0].abiertas
-                        ordenesAtendidas = result3[0].atendidas
-                        ordenesCerradas = result4[0].cerradas
+                        db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta"`, function (err, result2, fields) {
+                            if (err) throw err;
 
 
-                        res.render('historial.ejs', {
-                            data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }, data3: numeroEmpleado
+                            db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="atendida"`, function (err, result3, fields) {
+                                if (err) throw err;
+
+
+                                db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="cerrada"`, function (err, result4, fields) {
+                                    if (err) throw err;
+
+                                    ordenesAbiertas = result2[0].abiertas
+                                    ordenesAtendidas = result3[0].atendidas
+                                    ordenesCerradas = result4[0].cerradas
+
+
+                                    res.render('historial.ejs', {
+                                        data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }, data3: numeroEmpleado
+                                });
+                            });
                         });
                     });
                 });
-            });
-        });
+            }
+        }
+    });
 };
 
-
+//POST A revisar orden
 controller.revisar_POST = (req, res) => {
     id_orden = req.params.id
 

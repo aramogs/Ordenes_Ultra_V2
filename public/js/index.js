@@ -6,10 +6,10 @@ $( document ).ready(function() {
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
           } );
 
+// Ocultar boton de atenter si ya esta atendida
           if($('#status_cerrar2').text()=='atendida'){
           $('#atender').hide()
           }
-      
 
 });
 
@@ -19,7 +19,7 @@ $("#menu-toggle").click(function (e) {
 });
 
 
-//Revisar Clave de Cierre
+//Revisar Clave de Cierre para asignar texto y classes de bootstrap
   var txtclave= document.getElementById("clave_cierre");
   var clave = document.getElementById("clave_cerrar2").textContent;
   var btnAtender = document.getElementById("atender");
@@ -59,5 +59,12 @@ $("#menu-toggle").click(function (e) {
     }
 
   });
+
+  m= document.getElementById('maquina');
+  m.addEventListener("change",function(e){
+console.log("fsdfsdfdsf")
+  });
+  
+
 
 
