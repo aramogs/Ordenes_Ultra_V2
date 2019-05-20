@@ -8,9 +8,18 @@
         <h1 class="display-4 text-center animated slow">Ordenes Ultra</h1>
         <p class="lead text-center"></p>
 
+        <%
+        if(data.ordenStatus == "Abierta"){
+           classBtn = "danger"
+        }else if(data.ordenStatus == "Cerrada"){
+            classBtn ="success"
+        }else{
+            classBtn="info"
+        }
+        %>
 
         <div class="card bg-light  ">
-            <div class=" card-header text-white bg-success text-center">Informacion de la orden</div>
+            <div class=" card-header text-white bg-<%=classBtn%> text-center text-capitalize"><%=data.ordenStatus%></div>
             <div class="card-body">
                 <table class="table">
                     <thead class="thead-dark">
@@ -43,7 +52,7 @@
                                 <td class="bg-dark" colspan="2"><%=data.departamento%></td>
                             </tr>
                         <tr class="text-center text-white">
-                            <td class="bg-info" colspan="2">Atendida</td>
+                            <td class="bg-info" colspan="2">Informacion atendida</td>
                         </tr>
                         <tr>
                             <td>Atendida por</td>
@@ -58,7 +67,7 @@
                             <td><%= data.accionAtendida%></td>
                         </tr>
                         <tr class="text-center text-white">
-                            <td class="bg-success" colspan="2">Cerrada</td>
+                            <td class="bg-success" colspan="2">Informacion cerrada</td>
                         </tr>
                         <tr>
                             <td>Cerrada por</td>
@@ -71,7 +80,7 @@
 
                         <tr>
                             <td>Acciones de cierre</td>
-                            <td><%= data.accionAtendida%></td>
+                            <td><%= data.accionCierre%></td>
                         </tr>
                 </table>
             </div>

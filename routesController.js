@@ -117,16 +117,17 @@ controller.ordenes_GET = (req, res) => {
       WHERE (ordenes.departamento = departamento.id_departamento) 
       AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) ORDER BY id_orden DESC`, function (err, result, fields) {
             if (err) throw err;
-
+            
+            
             db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta"`, function (err, result2, fields) {
                 if (err) throw err;
 
 
-                db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="atendida"`, function (err, result3, fields) {
+                db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="Atendida"`, function (err, result3, fields) {
                     if (err) throw err;
 
 
-                    db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="cerrada"`, function (err, result4, fields) {
+                    db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="Cerrada"`, function (err, result4, fields) {
                         if (err) throw err;
 
                         ordenesAbiertas = result2[0].abiertas
@@ -274,29 +275,21 @@ controller.historial_POST = (req, res) => {
     numeroEmpleado = req.body.user;
 
     db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
-        if (err) {
-            res.redirect('/login/historial')
-        } else {
-
-            if (count[0].count == 0) {
-                res.redirect('/login/historial')
-            }
-            else {
 
                 db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
                 WHERE (ordenes.departamento = departamento.id_departamento) 
                 AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) AND (ordenes.reporto ="${numeroEmpleado}") ORDER BY id_orden DESC `, function (err, result, fields) {
                         if (err) throw err;
 
-                        db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta"`, function (err, result2, fields) {
+                        db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta" AND reporto ="${numeroEmpleado}"`, function (err, result2, fields) {
                             if (err) throw err;
 
 
-                            db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="atendida"`, function (err, result3, fields) {
+                            db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="Atendida" AND reporto ="${numeroEmpleado}"`, function (err, result3, fields) {
                                 if (err) throw err;
 
 
-                                db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="cerrada"`, function (err, result4, fields) {
+                                db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="Cerrada" AND reporto ="${numeroEmpleado}"`, function (err, result4, fields) {
                                     if (err) throw err;
 
                                     ordenesAbiertas = result2[0].abiertas
@@ -311,11 +304,9 @@ controller.historial_POST = (req, res) => {
                             });
                         });
                     });
-            }
-        }
-    });
-};
-
+            });
+        };
+        
 //POST A revisar orden
 controller.revisar_POST = (req, res) => {
     id_orden = req.params.id
@@ -339,11 +330,10 @@ controller.revisar_POST = (req, res) => {
             accionAtendida = result[0].acciones_atendida;
             accionCierre = result[0].acciones_cierre;
             clave_cierre = result[0].clave;
-
-
+           ordenStatus = result[0].status
 
             res.render('revisar.ejs', {
-                data: { id_orden, descripcionProblema, accionAtendida, accionCierre, nombreEmpleado, departamento, numeroEmpleado, creacionFecha, cierreFecha, clave_cierre, parteAfectada, nombrEncargado, nombreCierre, atendidaFecha }
+                data: { id_orden, descripcionProblema, accionAtendida, accionCierre, nombreEmpleado, departamento, numeroEmpleado, creacionFecha, cierreFecha, clave_cierre, parteAfectada, nombrEncargado, nombreCierre, atendidaFecha, ordenStatus}
             });
         });
 };

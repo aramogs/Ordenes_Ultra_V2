@@ -6,14 +6,14 @@
     <div class="box-header">
         <h3 class="box-title">Ordenes del usuario <%= data3 %></h3>
     </div>
-    
-<% include tarjetas %> 
+
+    <% include tarjetas %>
 
     <!-- /.box-header -->
     <div class="table table-responsive" id="table">
         <table id="myTable" class="table table-bordered table-striped">
             <thead class="thead-dark">
-               
+
                 <th>Revisar</th>
                 <th>ID</th>
                 <th>Clave</th>
@@ -27,14 +27,14 @@
                 <th>Fecha</th>
                 <th>Status</th>
                 <th>Tipo</th>
-                
+
 
             </thead>
 
             <tbody>
-                    <%if(data) { %>
-                        <% for (var i = 0; i < data.length; i++) { %>
-                        <%
+                <%if(data) { %>
+                <% for (var i = 0; i < data.length; i++) { %>
+                <%
                               let date = data[i].fecha_hora
                               let formatted_date = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear()
                               %>
@@ -42,8 +42,20 @@
 
                     <td>
                         <form method="POST">
-                            <button type="submit" formaction="/revisar/<%= data[i].id_orden%>" class="btn btn-info">Revisar</button>
-                        </form> 
+
+                            <%
+                            if(data[i].status == "Abierta"){
+                               classBtn = "danger"
+                            }else if(data[i].status == "Cerrada"){
+                                classBtn ="success"
+                            }else{
+                                classBtn="info"
+                            }
+                            %>
+
+                            <button type="submit" formaction="/revisar/<%= data[i].id_orden%>"
+                                class="btn btn-<%=classBtn%>">Revisar</button>
+                        </form>
                     </td>
 
                     <td class="table_id"><%= data[i].id_orden %></td>
@@ -63,10 +75,10 @@
                 <% } %>
             </tbody>
         </table>
-</div>
+    </div>
 
 
-<% include footer %>
+    <% include footer %>
 </div>
 </body>
 
