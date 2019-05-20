@@ -25,10 +25,14 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="Titulo">Numero de orden</label>
-          <input type="text" class="form-control" name="id_orden" id="id_orden" value=""
-            placeholder="Escriba el numero de orden">
-        </div>
+          <label for="Titulo">Numero de Orden</label>
+          <select class="form-control" name="id_orden" id="id_orden" >
+
+              <% for (var i = 0; i < data3.length; i++) { %>
+              <option><%= data3[i].id_orden %></option>
+              <% } %>
+          </select>
+      </div>
 
         <!-- /.box footer -->
 
