@@ -2,27 +2,40 @@
 <% include sidebar %>
 <% include navbar %>
 
-<div class="col-md-6 col-lg-10-2">
-  <div class="box box-primary">
-    <div class="box-header with-border">
-      <h3 class="box-title">Iniciar Sesion</h3>
-    </div>
-    <form id="login" action="/<%=data%>" method="POST">
-      <div class="box-body">
-        <div class="form-group">
-          <input type="password" placeholder="Gafete" id="user" class="form-control" name="user">
-        </div>
-      </div>
-   
-    <div class="box-footer">
-      <button id="login_button" type="submit" class="btn btn-primary" >Iniciar
-        Sesion</button>
+<div class="col-md-10 col-lg-10-2 col-xl-11">
+
+  <div class="row row mt-1">
+    <div class="col-lg-6">
+      <img id="loginImg" src="/img/tristone_logo_head.png" class="rounded mx-auto d-block" alt="Tristone Flowtech">
     </div>
   </div>
-</div>
-</form>
 
+  <form id="login" action="/<%=data%>" method="POST">
+
+
+    <div class="row row mt-4">
+      <div class="col-lg-6">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend ">
+            <span class="input-group-text bg-secondary text-white  fas fa-key rounded" id="basic-addon1"></span>
+          </div>
+          <input type="password" placeholder="Contraseña" id="user" class="form-control rounded" name="user">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="box-footer">
+          <button id="login_button" type="submit" class="btn btn-primary btn-lg btn-block">Iniciar
+            Sesion</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
 <% include footer %>
 </div>
 </body>
+
 </html>

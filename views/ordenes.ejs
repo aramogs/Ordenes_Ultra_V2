@@ -3,79 +3,141 @@
 <% include navbar %>
 
 <div class="col-md-10 col-lg-10-2 col-xl-11">
-    <div class="box-header">
+   <div class="row">
+    <div class="box-header col-lg-1">
         <h3 class="box-title">Ordenes</h3>
     </div>
-    <!-- /.box-header -->
-    <div class="table table-responsive" id="table">
-        <table id="example1" class="table table-bordered table-striped">
-            <thead class="thead-dark">
+</div>
 
-                <th>ID</th>
-                <th>Departamento</th>
-                <th>Maquina</th>
-                <th>Parte afectada</th>
-                <th>Descripcion de la falla</th>
-                <th>Reportado por</th>
-                <th>Turno</th>
-                <th>Grupo</th>
-                <th>Fecha</th>
-                <th>Status</th>
-                <th>Tipo</th>
+    <div class="row" id="tarjetas">
+        <!-- Ordenes Abiertas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Abiertas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%=data2.ordenesAbiertas%></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="far fa-clipboard fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            </thead>
+        <!-- Ordenes Atendidas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Atendidas</div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><%=data2.ordenesAtendidas%></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <tbody>
-                    <%if(data) { %>
-                        <% for (var i = 0; i < data.length; i++) { %>
-                        <%
+        <!-- Ordenes Cerradas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Cerradas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%=data2.ordenesCerradas%></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Decargar tabla  <span class="fas fa-chevron-right"></span>
+                            </div>
+                            
+                        </div>
+                        <div class="col-auto">
+                        <button class="btn btn-success" onclick="exportTableToExcel('myTable')"><span class="fas fa-file-excel 2x"></span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- /.box-header -->
+<div class="table table-responsive" id="table">
+    <table id="myTable" class="table table-bordered table-striped">
+        <thead class="thead-dark">
+
+            <th>ID</th>
+            <th>Departamento</th>
+            <th>Maquina</th>
+            <th>Parte afectada</th>
+            <th>Descripcion de la falla</th>
+            <th>Reportado por</th>
+            <th>Turno</th>
+            <th>Grupo</th>
+            <th>Fecha</th>
+            <th>Status</th>
+            <th>Tipo</th>
+
+        </thead>
+
+        <tbody>
+            <%if(data) { %>
+            <% for (var i = 0; i < data.length; i++) { %>
+            <%
                               let date = data[i].fecha_hora
                               let formatted_date = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear()
                               %>
-                <tr class="table_roww">
-                    <td class="table_id"><%= data[i].id_orden %></td>
-                    <td><%= data[i].nombre%></td>
-                    <td><%= data[i].maquina %></td>
-                    <td><%= data[i].componente %></td>
-                    <td class="table_long_text"><%= data[i].descripcion_problema %></td>
-                    <td><%= data[i].reporto %></td>
-                    <td><%= data[i].turno %></td>
-                    <td><%= data[i].grupo %></td>
-                    <td><%= formatted_date %></td>
-                    <td><%= data[i].status %></td>
-                    <td><%= data[i].tipo_orden %></td>
-                </tr>
-                <% } %>
-                <% } %>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Departamento</th>
-                    <th>Maquina</th>
-                    <th>Parte afectada</th>
-                    <th>Descripcion de la falla</th>
-                    <th>Reportado por</th>
-                    <th>Turno</th>
-                    <th>Grupo</th>
-                    <th>Fecha</th>
-                    <th>Status</th>
-                    <th>Tipo</th>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-    <!-- Pagination -->
-    <ul class="pagination">
-    </ul>
-    <!-- ./ Pagination -->
+            <tr class="table_roww">
+                <td class="table_id"><%= data[i].id_orden %></td>
+                <td><%= data[i].nombre%></td>
+                <td><%= data[i].maquina %></td>
+                <td><%= data[i].componente %></td>
+                <td class="table_long_text"><%= data[i].descripcion_problema %></td>
+                <td><%= data[i].reporto %></td>
+                <td><%= data[i].turno %></td>
+                <td><%= data[i].grupo %></td>
+                <td><%= formatted_date %></td>
+                <td><%= data[i].status %></td>
+                <td><%= data[i].tipo_orden %></td>
+            </tr>
+            <% } %>
+            <% } %>
+        </tbody>
+    </table>
 </div>
 
 
 <% include footer %>
-<script>
-        pagination();
-</script>
 </div>
 </body>
 

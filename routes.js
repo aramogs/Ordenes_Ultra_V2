@@ -111,13 +111,33 @@ router.post('/guardar_orden', (req, res) => {
 router.get('/ordenes', (req, res) => {
   db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
     WHERE (ordenes.departamento = departamento.id_departamento) 
-    AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) ORDER BY id_orden DESC`, function (err, result2, fields) {
+    AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) ORDER BY id_orden DESC`, function (err, result, fields) {
       if (err) throw err;
-      res.render('ordenes.ejs', {
-        data: result2
+
+      db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta"`, function (err, result2, fields) {
+        if (err) throw err;
+        
+
+        db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="atendida"`, function (err, result3, fields) {
+          if (err) throw err;
+          
+
+          db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="cerrada"`, function (err, result4, fields) {
+            if (err) throw err;
+            
+            ordenesAbiertas = result2[0].abiertas
+            ordenesAtendidas = result3[0].atendidas
+            ordenesCerradas = result4[0].cerradas 
+
+            res.render('ordenes.ejs', {
+              data: result ,data2: {ordenesAbiertas,ordenesAtendidas,ordenesCerradas}
+            });
+          });
+        });
       });
     });
 });
+
 
 
 router.post("/cerrar_orden", (req, res) => {
@@ -236,6 +256,22 @@ router.post('/cambio_orden/:id', (req, res) => {
     }
   })
 
+});
+
+
+router.post('/historial', (req, res) => {
+  numeroEmpleado = req.body.user;
+
+  db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
+    WHERE (ordenes.departamento = departamento.id_departamento) 
+    AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) AND (ordenes.reporto ="${numeroEmpleado}") ORDER BY id_orden DESC `, function (err, result2, fields) {
+      if (err) throw err;
+      console.log(numeroEmpleado);
+
+      res.render('historial.ejs', {
+        data: result2, data2: numeroEmpleado
+      });
+    });
 });
 
 

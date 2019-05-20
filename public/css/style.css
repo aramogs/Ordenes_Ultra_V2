@@ -2,3 +2,31 @@ img{
    width:15%;
    height:15%;
 }
+
+#loginImg{
+  width:35%;
+  height:100%;
+}
+
+.icoSidebar {
+   color: #1879BE
+ }
+
+ .list-group-item:hover{
+   border-style: solid;
+   border-right-width: 4px;
+   border-right-color:  #FCBF22;
+ }
+
+ .btnNavbar:hover{
+   background-color: #FCBF22;
+   border-block: #FCBF22;;
+ }
+ .sidebar-heading{
+   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+ }
+ /* Carousel styles */
+ .carousel-inner img {
+  margin: auto;
+}
+
