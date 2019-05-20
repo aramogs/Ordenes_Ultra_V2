@@ -2,46 +2,76 @@
 <% include sidebar %>
 <% include navbar %>
 
-<div class="col-xl-12 jumbotron jumbotron-fluid">
+<div class="col-xl-12 jumbotron jumbotron-fluid animated bounceInDown">
     <div class="container">
-        <img src="/img/TristoneLogo.png" class="rounded mx-auto d-block" alt="Tristone Flowtech">
-        <h1 class="display-4 text-center">Ordenes Ultra</h1>
-        <p class="lead text-center">Informacion de orden revisada</p>
+        <img src="/img/TristoneLogo.png" class="rounded mx-auto d-block " alt="Tristone Flowtech">
+        <h1 class="display-4 text-center animated slow">Ordenes Ultra</h1>
+        <p class="lead text-center"></p>
 
 
         <div class="card bg-light  ">
-            <div class=" card-header text-white bg-warning text-center">Informacion:</div>
+            <div class=" card-header text-white bg-success text-center">Informacion de la orden</div>
             <div class="card-body">
                 <table class="table">
                     <thead class="thead-dark">
                         <tr>
                             <td>ID</td>
-                            <td><%= data%></td>
+                            <td><%= data.id_orden%></td>
                         </tr>
                         <tr>
-                            <td>Departamento</td>
-                            <td><%= data.departamento%></td>
+                            <td>Nombre del creador</td>
+                            <td><%= data.nombreEmpleado%></td>
                         </tr>
                         <tr>
-                            <td>Maquina</td>
-                            <td><%= data.maquina%></td>
+                            <td>Numero de empleado</td>
+                            <td><%= data.numeroEmpleado%></td>
                         </tr>
                         <tr>
-                            <td>Turno</td>
-                            <td><%= data.turno%></td>
+                            <td>Parte afectada</td>
+                            <td><%= data.parteAfectada%></td>
                         </tr>
                         <tr>
-                            <td>Grupo</td>
-                            <td><%= data.grupo%></td>
+                            <td>Descripcion problema</td>
+                            <td><%= data.descripcionProblema%></td>
                         </tr>
                         <tr>
-                            <td>Clave de cierre</td>
-                            <td><%= data.clave%></td>
+                            <td>Fecha de generacion</td>
+                            <td><%= data.creacionFecha%></td>
+                        </tr>
+
+                        <tr class="text-center text-white">
+                                <td class="bg-dark" colspan="2"><%=data.departamento%></td>
+                            </tr>
+                        <tr class="text-center text-white">
+                            <td class="bg-info" colspan="2">Atendida</td>
+                        </tr>
+                        <tr>
+                            <td>Atendida por</td>
+                            <td><%= data.nombrEncargado%></td>
+                        </tr>
+                        <tr>
+                            <td>Fecha atendida</td>
+                            <td><%= data.atendidaFecha%></td>
+                        </tr>
+                        <tr>
+                            <td>Acciones de atendida</td>
+                            <td><%= data.accionAtendida%></td>
+                        </tr>
+                        <tr class="text-center text-white">
+                            <td class="bg-success" colspan="2">Cerrada</td>
+                        </tr>
+                        <tr>
+                            <td>Cerrada por</td>
+                            <td><%= data.nombreCierre%></td>
+                        </tr>
+                        <tr>
+                            <td>Fecha de cierre</td>
+                            <td><%= data.cierreFecha%></td>
                         </tr>
 
                         <tr>
-                            <td>Descripcion</td>
-                            <td><%= data.descripcion%></td>
+                            <td>Acciones de cierre</td>
+                            <td><%= data.accionAtendida%></td>
                         </tr>
                 </table>
             </div>

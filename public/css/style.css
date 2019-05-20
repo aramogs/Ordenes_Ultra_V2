@@ -1,35 +1,54 @@
-img{
-   width:15%;
-   height:15%;
+img {
+  width: 15%;
+  height: 15%;
 }
 
-#loginImg{
-  width:35%;
-  height:100%;
+#loginImg {
+  width: 35%;
+  height: 100%;
 }
 
 .icoSidebar {
-   color: #1879BE
- }
+  color: #1879BE
+}
 
- .list-group-item:hover{
-   border-style: solid;
-   border-right-width: 4px;
-   border-right-color:  #FCBF22;
- }
+.list-group-item:hover {
+  border-style: solid;
+  border-right-width: 4px;
+  border-right-color: #FCBF22;
+}
 
- .btnNavbar:hover{
-   background-color: #FCBF22;
-   border-block: #FCBF22;;
- }
- .sidebar-heading{
-   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
- }
- /* Carousel styles */
- .carousel-inner img {
+.btnNavbar:hover {
+  background-color: #FCBF22;
+  border-block: #FCBF22;
+  ;
+}
+
+.sidebar-heading {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+/* Carousel styles */
+
+.carousel-inner img {
   margin: auto;
 }
 
 .carousel-control-next, .carousel-control-prev, .carousel-indicators {
   filter: invert(100%);
+}
+
+/* Cards custom delay */
+
+.cdelay-1 {
+  animation-delay: .25s;
+}
+.cdelay-2 {
+  animation-delay: .5s;
+}
+.cdelay-3 {
+  animation-delay: .75s;
+}
+.cdelay-4 {
+  animation-delay: 1s;
 }
