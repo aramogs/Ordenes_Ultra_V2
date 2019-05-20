@@ -1,6 +1,9 @@
 const db = require('./public/db/conn');
 const controller = {};
 
+controller.index_GET = (req, res) => {
+    res.render('index.ejs');
+};
 
 
 controller.crear_orden_GET = (req, res) => {
@@ -142,10 +145,15 @@ controller.cerrar_orden_POST = (req, res) => {
                 db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {
                     if (err) throw err;
 
-                    nombreEmpleado = result3[0].Nombre;
+                    db.query(`SELECT id_orden FROM ordenes WHERE status='Abierta' OR status='atendida'`, function (err, result4, fields) {
+                        if (err) throw err;
 
-                    res.render('cerrar_orden.ejs', {
-                        data: numeroEmpleado, data2: nombreEmpleado
+
+                        nombreEmpleado = result3[0].Nombre;
+
+                        res.render('cerrar_orden.ejs', {
+                            data: numeroEmpleado, data2: nombreEmpleado, data3: result4
+                        });
                     });
                 });
             }
@@ -169,20 +177,23 @@ controller.cerrar_orden2_POST = (req, res) => {
             }
             else {
 
-
-                db.query(`SELECT clave FROM ordenes WHERE id_orden=${id_orden}`, function (err, clave, fields) {
+                db.query(`SELECT status FROM ordenes WHERE id_orden=${id_orden}`, function (err, result2, fields) {
                     if (err) throw err;
-                    id_clave = clave[0].clave
+                    status=result2[0].status
+                    db.query(`SELECT clave FROM ordenes WHERE id_orden=${id_orden}`, function (err, clave, fields) {
+                        if (err) throw err;
+                        id_clave = clave[0].clave
 
-                    db.query(`SELECT * FROM ordenes,areas_componentes_afectados 
+                        db.query(`SELECT * FROM ordenes,areas_componentes_afectados 
                 WHERE ordenes.id_orden = ${id_orden}
                 AND ordenes.parte_afectada = areas_componentes_afectados.id_componente`, function (err, result1, fields) {
 
-                            parteAfectada = result1[0].componente
-                            res.render('cerrar_orden2.ejs', {
-                                data: { numeroEmpleado, nombreEmpleado, id_orden, parteAfectada, id_clave }
+                                parteAfectada = result1[0].componente
+                                res.render('cerrar_orden2.ejs', {
+                                    data: { numeroEmpleado, nombreEmpleado, id_orden, parteAfectada, id_clave, status }
+                                });
                             });
-                        });
+                    });
                 });
             }
         }
