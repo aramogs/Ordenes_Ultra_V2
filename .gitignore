@@ -41,3 +41,7 @@ Thumbs.db
 ######################
 /node_modules
 node_modules/
+
+# Resources #
+######################
+public/resources
