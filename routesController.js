@@ -65,7 +65,7 @@ controller.crear_orden2_POST = (req, res) => {
 
         db.query(`SELECT componente FROM areas_componentes_afectados WHERE familia_maquina = '${familia}'`, (err, result3, fields) => {
             if (err) throw err;
-            
+
             res.render('crear_orden2.ejs', {
                 data: departamento, data2: maquina, data3: result3, data4: nombreEmpleado, data5: numeroEmpleado
             });
@@ -117,8 +117,8 @@ controller.ordenes_GET = (req, res) => {
       WHERE (ordenes.departamento = departamento.id_departamento) 
       AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) ORDER BY id_orden DESC`, function (err, result, fields) {
             if (err) throw err;
-            
-            
+
+
             db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta"`, function (err, result2, fields) {
                 if (err) throw err;
 
@@ -276,37 +276,37 @@ controller.historial_POST = (req, res) => {
 
     db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
 
-                db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
+        db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
                 WHERE (ordenes.departamento = departamento.id_departamento) 
                 AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) AND (ordenes.reporto ="${numeroEmpleado}") ORDER BY id_orden DESC `, function (err, result, fields) {
+                if (err) throw err;
+
+                db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta" AND reporto ="${numeroEmpleado}"`, function (err, result2, fields) {
+                    if (err) throw err;
+
+
+                    db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="Atendida" AND reporto ="${numeroEmpleado}"`, function (err, result3, fields) {
                         if (err) throw err;
 
-                        db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta" AND reporto ="${numeroEmpleado}"`, function (err, result2, fields) {
+
+                        db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="Cerrada" AND reporto ="${numeroEmpleado}"`, function (err, result4, fields) {
                             if (err) throw err;
 
-
-                            db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="Atendida" AND reporto ="${numeroEmpleado}"`, function (err, result3, fields) {
-                                if (err) throw err;
-
-
-                                db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="Cerrada" AND reporto ="${numeroEmpleado}"`, function (err, result4, fields) {
-                                    if (err) throw err;
-
-                                    ordenesAbiertas = result2[0].abiertas
-                                    ordenesAtendidas = result3[0].atendidas
-                                    ordenesCerradas = result4[0].cerradas
+                            ordenesAbiertas = result2[0].abiertas
+                            ordenesAtendidas = result3[0].atendidas
+                            ordenesCerradas = result4[0].cerradas
 
 
-                                    res.render('historial.ejs', {
-                                        data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }, data3: numeroEmpleado
-                                    });
-                                });
+                            res.render('historial.ejs', {
+                                data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }, data3: numeroEmpleado
                             });
                         });
                     });
+                });
             });
-        };
-        
+    });
+};
+
 //POST A revisar orden
 controller.revisar_POST = (req, res) => {
     id_orden = req.params.id
@@ -330,12 +330,67 @@ controller.revisar_POST = (req, res) => {
             accionAtendida = result[0].acciones_atendida;
             accionCierre = result[0].acciones_cierre;
             clave_cierre = result[0].clave;
-           ordenStatus = result[0].status
+            ordenStatus = result[0].status
 
             res.render('revisar.ejs', {
-                data: { id_orden, descripcionProblema, accionAtendida, accionCierre, nombreEmpleado, departamento, numeroEmpleado, creacionFecha, cierreFecha, clave_cierre, parteAfectada, nombrEncargado, nombreCierre, atendidaFecha, ordenStatus}
+                data: { id_orden, descripcionProblema, accionAtendida, accionCierre, nombreEmpleado, departamento, numeroEmpleado, creacionFecha, cierreFecha, clave_cierre, parteAfectada, nombrEncargado, nombreCierre, atendidaFecha, ordenStatus }
             });
         });
 };
+
+// Dashboard GET
+controller.dashboard_GET = (req, res) => {
+    res.render('dashboard.ejs')
+}
+
+
+controller.dashboard_POST = (req, res) => {
+    
+
+    selectedMonth = req.body.month_selected
+    selectedYear = req.body.year_selected
+    selectedDepartment = req.body.department_selected
+
+    db.query(`SELECT COUNT(*) AS abiertas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear}  AND status ="Abierta" `, function (err, result2, fields) {
+        if (err) throw err;
+        db.query(`SELECT COUNT(*) AS atendidas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND status ="Atendida"`, function (err, result3, fields) {
+            if (err) throw err;
+            db.query(`SELECT COUNT(*) AS cerradas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND status ="Cerrada"`, function (err, result4, fields) {
+                if (err) throw err;
+                db.query(`SELECT nombre FROM departamento WHERE id_departamento = ${selectedDepartment} `, function (err, result5, fields) {
+                    if (err) throw err;
+                db.query(`
+                SELECT COUNT(id_orden) AS parte_afectada_count, maquinas.nombre as maquina, departamento.nombre as departamento , ordenes.tiempo_muerto
+                FROM otplus.ordenes, otplus.maquinas, otplus.departamento 
+                WHERE ordenes.maquina = maquinas.id_maquina 
+                AND ordenes.departamento = departamento.id_departamento 
+                AND MONTH(ordenes.fecha_hora) = ${selectedMonth}  
+                AND YEAR(ordenes.fecha_hora) = ${selectedYear} 
+                AND departamento.id_departamento = "${selectedDepartment}"
+                GROUP by ordenes.parte_afectada
+                `, 
+                function (err, result6, fields) {
+                    if (err) throw err;
+                    
+                  
+                    ordenesAbiertas = result2[0].abiertas
+                    ordenesAtendidas = result3[0].atendidas
+                    ordenesCerradas = result4[0].cerradas
+                    ordenesDepartamento = result5[0].nombre
+                    ordenesSeleccionadas = result6
+
+                    
+                    res.render('dashboard_view.ejs', {
+                        data: { ordenesAbiertas,ordenesAtendidas,ordenesCerradas,ordenesDepartamento,ordenesSeleccionadas,selectedMonth,selectedYear }
+                    });
+                });
+            });
+        });
+    });
+});
+};
+
+
+
 
 module.exports = controller;

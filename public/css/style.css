@@ -37,8 +37,9 @@ img {
 .carousel-control-next, .carousel-control-prev, .carousel-indicators {
   filter: invert(100%);
 }
+/* /Carousel styles */
 
-/* Cards custom delay */
+/* Tarjetas custom */
 
 .cdelay-1 {
   animation-delay: .25s;
@@ -52,3 +53,24 @@ img {
 .cdelay-4 {
   animation-delay: 1s;
 }
+
+.border-left-abiertas{
+  border-left: 5px solid rgb(255, 91, 91);
+  border-radius: 25px;
+}
+
+.border-left-atendidas{
+  border-left: 5px solid rgb(91, 203, 255);
+  border-radius: 25px;
+}
+
+.border-left-cerradas{
+  border-left: 5px solid rgb(111, 255, 92);
+  border-radius: 25px;
+}
+
+.border-left-excel{
+  border-left: 5px solid rgb(111, 255, 92);
+  border-radius: 25px;
+}
+/* / Tarjetas custom */
