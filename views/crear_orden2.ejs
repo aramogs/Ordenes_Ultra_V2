@@ -28,20 +28,19 @@
                 <div class="row">
                     <div class="form-group col-lg-6">
                         <label for="Titulo">Departamento</label>
-                        <select readonly class="form-control" name="departamento" id="departamento">
-                            <option><%= data %></option>
-                        </select>
+                        <input readonly type="text" class="form-control" name="departamento" id="departamento"
+                            value="<%= data %>"></input>
                     </div>
                     <div class="form-group col-lg-6">
                         <label for="Titulo">Maquina</label>
-                        <select readonly class="form-control" name="maquina" id="maquina">
-                            <option><%= data2 %></option>
-                        </select>
+                        <input readonly type="text" class="form-control" name="maquina" id="maquina"
+                            value="<%= data2 %>"></input>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="Titulo">Componente</label>
-                    <select class="form-control" name="componente">
+                    <select class="form-control" name="componente" required>
+                        <option value="" selected disabled hidden>Seleccionar</option required>
                         <%if(data3) { %>
                         <% for (var i = 0; i < data3.length; i++) { %>
                         <option><%= data3[i].componente %></option>
@@ -52,20 +51,32 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="Titulo">Turno</label>
-                    <select class="form-control" name="turno">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
+                    <label for="Titulo">La orden genera tiempo muerto?</label>
+                    <select class="form-control" name="tmuerto" required>
+                        <option value="" selected disabled hidden>Seleccionar</option required>
+                        <option value="1">Si</option>
+                        <option value="0">No</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="Titulo">Grupo</label>
-                    <select class="form-control" name="grupo">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                    </select>
+                <div class="row">
+                    <div class="form-group col-lg-6">
+                        <label for="Titulo">Turno</label>
+                        <select class="form-control" name="turno" required>
+                            <option value="" selected disabled hidden>Seleccionar</option required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="Titulo">Grupo</label>
+                        <select class="form-control" name="grupo" required>
+                            <option value="" selected disabled hidden>Seleccionar</option required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="Descripcion">Descripcion de la falla</label>

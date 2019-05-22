@@ -84,6 +84,7 @@ controller.crear_orden2_POST = (req, res) => {
 //POST a guardar_orden despues de crear orden2
 controller.guardar_orden_POST = (req, res) => {
 
+    
     empleado = (req.body.empleado)
     gafete = (req.body.gafete)
     departamento = (req.body.departamento)
@@ -150,11 +151,11 @@ controller.guardar_orden_POST = (req, res) => {
         }, function (err) {
             if (err) {
 
-                console.log(err);
+                //console.log(err);
 
                 return;
             }
-            console.log('mail sent');
+            //console.log('mail sent');
         });
 
     });
