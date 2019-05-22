@@ -374,7 +374,7 @@
                             <td class="wrapper" align="center">
                                 <img src="http://www.tristone.com/Media/1003/tristone_logo_head.png" alt="logo">
                                 <h1>Orden Ultra</h1>
-                                <h2>Status</h2>
+                                <h2 style="color:<%= color%>"><%= status%></h2>
                                 <table style="width:100%">
 
                                     <tr>
@@ -418,30 +418,30 @@
 
                                     <tr>
                                         <td style="width:30%">Atendida por</td>
-                                        <td>ARAM.GUILLEN</td>
+                                        <td><%= empleadoAtendida%></td>
                                     </tr>
                                     <tr>
                                         <td>Fecha atendida</td>
-                                        <td>20/05/2019</td>
+                                        <td><%= fechaAtendida%></td>
                                     </tr>
                                     <tr>
                                         <td>Acciones de atendida</td>
-                                        <td>PRUEBA</td>
+                                        <td><%= accionAtendida%></td>
                                     </tr>
                                 </table>
                                 <h2 style="color: #0e943b">Informacion Cerrada</h2>
                                 <table style="width:100%" >
                                     <tr>
                                         <td style="width:30%">Cerrada por</td>
-                                        <td>ARAM.GUILLEN</td>
+                                        <td><%= empleadoCerrada%></td>
                                     </tr>
                                     <tr>
                                         <td>Fecha de cierre</td>
-                                        <td>20/05/2019</td>
+                                        <td><%= fechaCerrada%></td>
                                     </tr>
                                     <tr>
                                         <td>Acciones de cierre</td>
-                                        <td>PRUEBA</td>
+                                        <td><%= accionCerrada%></td>
                                     </tr>
 
 

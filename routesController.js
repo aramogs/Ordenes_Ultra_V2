@@ -132,6 +132,7 @@ controller.guardar_orden_POST = (req, res) => {
 
     db.query(`SELECT MAX(id_orden) AS id FROM ordenes`, function (err, result5, fields) {
         if (err) throw err;
+<<<<<<< HEAD
         id = result5[0].id + 1;
 
 
@@ -156,6 +157,48 @@ controller.guardar_orden_POST = (req, res) => {
                 return;
             }
             //console.log('mail sent');
+=======
+        db.query(`SELECT Email from empleados WHERE Gafete= ${gafete}`, function (err, result6, fields) {
+            if (err) throw err;
+            email = result6[0].Email;
+            id = result5[0].id + 1;
+
+            //Enviar Correos
+            app.mailer.send('email.ejs', {
+                //Info General
+                to: '',
+                subject: 'Orden Utra Creada',
+                status: 'Abierta',
+                color: '#b30000',
+                id_orden: id,
+                creador: empleado,
+                gafete: gafete,
+                maquina: maquina,
+                descripcion: descripcion,
+                fecha: new Date(),
+                clave: clave,
+
+                //Info Atendida
+                empleadoAtendida: '',
+                fechaAtendida: '',
+                accionAtendida: '',
+
+                //Info cerrada
+                empleadoCerrada: '',
+                fechaCerrada: '',
+                accionCerrada: '',
+
+            }, function (err) {
+                if (err) {
+
+                    console.log(err);
+
+                    return;
+                }
+                console.log('mail sent');
+            });
+
+>>>>>>> 72312f71f2287de3ca90434a4d442f1b7c677786
         });
 
     });
@@ -287,23 +330,68 @@ controller.cambio_orden_POST = (req, res) => {
         var endDate = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
         var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
-        if (accionTomada == "Atendida") {
-            db.query(`UPDATE ordenes SET 
+        //Info correo
+        reporto = result[0].reporto;
+        maquina = result[0].maquina;
+        descripcion = result[0].descripcion_problema;
+        db.query(`SELECT Nombre FROM empleados WHERE Gafete= ${reporto}`, function (err, result2, fields) {
+            nombrereporto = result2[0].Nombre;
+            db.query(`SELECT nombre FROM maquinas WHERE id_maquina= ${maquina}`, function (err, result3, fields) {
+                nombremaquina = result3[0].nombre;
+                ////////////
+
+                if (accionTomada == "Atendida") {
+                    db.query(`UPDATE ordenes SET 
               status= "${accionTomada}",
               acciones_atendida= "${actividades}" ,
               fecha_hora_atendida= "${formatted_current_date}" ,
               tiempo_atendida= "${seconds}",
               usuario_atendida= "${nombreEmpleado}" 
               WHERE id_orden = ${id_orden}`, function (err, result, fields) {
-                    if (err) throw err;
+                            if (err) throw err;
 
-                    res.render('cambio_orden.ejs', {
-                        data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
+                            res.render('cambio_orden.ejs', {
+                                data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
+                            });
+                        });
+
+                    //Enviar Correo Atendida//////////////////////////////////////////////////////////
+                    app.mailer.send('email.ejs', {
+                        //Info General
+                        to: '',
+                        subject: 'Orden Utra Atendida',
+                        status: 'Atendida',
+                        color: '#3498db',
+                        id_orden: id_orden,
+                        creador: nombrereporto,
+                        gafete: reporto,
+                        maquina: nombremaquina,
+                        descripcion: descripcion,
+                        fecha: ordenFecha,
+                        clave: '',
+
+                        //Info Atendida
+                        empleadoAtendida: nombrereporto,
+                        fechaAtendida: '',
+                        accionAtendida: actividades,
+
+                        //Info cerrada
+                        empleadoCerrada: '',
+                        fechaCerrada: '',
+                        accionCerrada: '',
+
+                    }, function (err) {
+                        if (err) {
+
+                            console.log(err);
+
+                            return;
+                        }
+                        console.log('mail sent');
                     });
-                });
-
-        } else {
-            db.query(`UPDATE ordenes SET 
+                    //////////////////////////////////////////////////////////////////////////////////////
+                } else {
+                    db.query(`UPDATE ordenes SET 
                 status= "${accionTomada}",
                 fecha_hora_cierre= "${formatted_current_date}",
                 usuario_cierre= "${nombreEmpleado}",
@@ -312,12 +400,51 @@ controller.cambio_orden_POST = (req, res) => {
                 area_real_afectada= "NULL",
                 parte_real_afectada= "NULL"
                 WHERE id_orden = ${id_orden}`, function (err, result1, fields) {
-                    res.render('cambio_orden.ejs', {
-                        data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
+                            res.render('cambio_orden.ejs', {
+                                data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
+                            });
+                        });
+
+                    ///Enviar Correo Cerrada//////////////////////////////////////////////////////////
+                    app.mailer.send('email.ejs', {
+                        //Info General
+                        to: '',
+                        subject: 'Orden Utra Cerrada',
+                        status: 'Cerrada',
+                        color: '#0e943b',
+                        id_orden: id_orden,
+                        creador: nombrereporto,
+                        gafete: reporto,
+                        maquina: nombremaquina,
+                        descripcion: descripcion,
+                        fecha: ordenFecha,
+                        clave: '',
+
+                        //Info Atendida
+                        empleadoAtendida: '',
+                        fechaAtendida: '',
+                        accionAtendida: '',
+
+                        //Info cerrada
+                        empleadoCerrada: nombreEmpleado,
+                        fechaCerrada: formatted_current_date,
+                        accionCerrada: actividades,
+
+                    }, function (err) {
+                        if (err) {
+
+                            console.log(err);
+
+                            return;
+                        }
+                        console.log('mail sent');
                     });
-                });
-        }
+                }
+            });
+        })
     })
+
+
 
 };
 
