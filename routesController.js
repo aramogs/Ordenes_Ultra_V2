@@ -351,11 +351,15 @@ controller.dashboard_POST = (req, res) => {
     selectedYear = req.body.year_selected
     selectedDepartment = req.body.department_selected
 
-    db.query(`SELECT COUNT(*) AS abiertas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear}  AND status ="Abierta" `, function (err, result2, fields) {
+  console.log(selectedDepartment);
+  
+    
+
+    db.query(`SELECT COUNT(*) AS abiertas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND departamento = ${selectedDepartment} AND status ="Abierta" `, function (err, result2, fields) {
         if (err) throw err;
-        db.query(`SELECT COUNT(*) AS atendidas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND status ="Atendida"`, function (err, result3, fields) {
+        db.query(`SELECT COUNT(*) AS atendidas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND departamento = ${selectedDepartment} AND status ="Atendida"`, function (err, result3, fields) {
             if (err) throw err;
-            db.query(`SELECT COUNT(*) AS cerradas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND status ="Cerrada"`, function (err, result4, fields) {
+            db.query(`SELECT COUNT(*) AS cerradas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND departamento = ${selectedDepartment} AND status ="Cerrada"`, function (err, result4, fields) {
                 if (err) throw err;
                 db.query(`SELECT nombre FROM departamento WHERE id_departamento = ${selectedDepartment} `, function (err, result5, fields) {
                     if (err) throw err;
@@ -367,7 +371,7 @@ controller.dashboard_POST = (req, res) => {
                 AND MONTH(ordenes.fecha_hora) = ${selectedMonth}  
                 AND YEAR(ordenes.fecha_hora) = ${selectedYear} 
                 AND departamento.id_departamento = "${selectedDepartment}"
-                GROUP by ordenes.parte_afectada
+                GROUP by ordenes.maquina
                 `, 
                 function (err, result6, fields) {
                     if (err) throw err;
@@ -377,11 +381,10 @@ controller.dashboard_POST = (req, res) => {
                     ordenesAtendidas = result3[0].atendidas
                     ordenesCerradas = result4[0].cerradas
                     ordenesDepartamento = result5[0].nombre
-                    ordenesSeleccionadas = result6
-
+                    ordenesSeleccion = result6
                     
                     res.render('dashboard_view.ejs', {
-                        data: { ordenesAbiertas,ordenesAtendidas,ordenesCerradas,ordenesDepartamento,ordenesSeleccionadas,selectedMonth,selectedYear }
+                        data: { ordenesAbiertas,ordenesAtendidas,ordenesCerradas,ordenesDepartamento,ordenesSeleccion,selectedMonth,selectedYear }
                     });
                 });
             });
