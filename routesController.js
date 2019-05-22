@@ -132,32 +132,6 @@ controller.guardar_orden_POST = (req, res) => {
 
     db.query(`SELECT MAX(id_orden) AS id FROM ordenes`, function (err, result5, fields) {
         if (err) throw err;
-<<<<<<< HEAD
-        id = result5[0].id + 1;
-
-
-
-        //Enviar Correos
-        app.mailer.send('email.ejs', {
-            to: '',
-            subject: 'Ordenes Utra',
-            id_orden: id,
-            creador: empleado,
-            gafete: gafete,
-            maquina: maquina,
-            descripcion: descripcion,
-            fecha: new Date(),
-            clave: clave
-
-        }, function (err) {
-            if (err) {
-
-                //console.log(err);
-
-                return;
-            }
-            //console.log('mail sent');
-=======
         db.query(`SELECT Email from empleados WHERE Gafete= ${gafete}`, function (err, result6, fields) {
             if (err) throw err;
             email = result6[0].Email;
@@ -198,7 +172,6 @@ controller.guardar_orden_POST = (req, res) => {
                 console.log('mail sent');
             });
 
->>>>>>> 72312f71f2287de3ca90434a4d442f1b7c677786
         });
 
     });
