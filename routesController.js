@@ -95,6 +95,7 @@ controller.guardar_orden_POST = (req, res) => {
     descripcion = (req.body.descripcion)
     archivo = (req.body.archivo)
     clave = Math.floor(Math.random() * 10000);
+    tipoOrden = (req.body.tmuerto)
 
     db.query(`SELECT id_maquina FROM maquinas WHERE nombre ='${maquina}'`, function (err, result1, fields) {
 
@@ -109,11 +110,12 @@ controller.guardar_orden_POST = (req, res) => {
                 db.query(`SELECT id_departamento FROM departamento WHERE nombre='${departamento}'`, function (err, result2, fields) {
                     if (err) throw err;
 
-                    db.query(`INSERT INTO ordenes (departamento, maquina, parte_afectada, descripcion_problema, 
-        reporto, usuario_dominio, email, turno, grupo,  fecha_hora, clave, status, tipo_orden)
-        VALUES( '${result2[0].id_departamento}', '${result1[0].id_maquina}', '${componente}', '${descripcion}', 
-        '${gafete}', '${empleado}', '${empleado + '@tristone.com'}', '${turno}', '${grupo}', NOW() , '${clave}', 
-        'Abierta', 'Correctivo')`, (err, result, fields) => {
+                    db.query(`
+                    INSERT INTO ordenes (departamento, maquina, parte_afectada, descripcion_problema, 
+                    reporto, usuario_dominio, email, turno, grupo,  fecha_hora, clave, status, tipo_orden)
+                    VALUES( '${result2[0].id_departamento}', '${result1[0].id_maquina}', '${componente}', '${descripcion}', 
+                    '${gafete}', '${empleado}', '${empleado + '@tristone.com'}', '${turno}', '${grupo}', NOW() , '${clave}', 
+                    'Abierta', '${tipoOrden}')`, (err, result, fields) => {
                             if (err) throw err;
 
                             db.query(`SELECT id_orden FROM ordenes WHERE clave = ${clave}`, (err, result2, fields) => {
@@ -165,11 +167,11 @@ controller.guardar_orden_POST = (req, res) => {
             }, function (err) {
                 if (err) {
 
-                    console.log(err);
+                   // console.log(err);
 
                     return;
                 }
-                console.log('mail sent');
+                //console.log('mail sent');
             });
 
         });
@@ -302,7 +304,7 @@ controller.cambio_orden_POST = (req, res) => {
         var startDate = new Date(ordenFecha);//Fecha en que se creo la orden de trabajo
         var endDate = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
         var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
-
+        var tipoOrden = result[0].tipo_orden
         //Info correo
         reporto = result[0].reporto;
         maquina = result[0].maquina;
@@ -311,7 +313,13 @@ controller.cambio_orden_POST = (req, res) => {
             nombrereporto = result2[0].Nombre;
             db.query(`SELECT nombre FROM maquinas WHERE id_maquina= ${maquina}`, function (err, result3, fields) {
                 nombremaquina = result3[0].nombre;
-                ////////////
+
+                //Si es de tipo correctivo actualiza segundos //////////////////////////////////////////////////////////
+                if(tipoOrden == "Otra"){
+                    seconds = 0                   
+                }else{          
+                    seconds = seconds
+                }
 
                 if (accionTomada == "Atendida") {
                     db.query(`UPDATE ordenes SET 
@@ -327,6 +335,7 @@ controller.cambio_orden_POST = (req, res) => {
                                 data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
                             });
                         });
+
 
                     //Enviar Correo Atendida//////////////////////////////////////////////////////////
                     app.mailer.send('email.ejs', {
@@ -356,11 +365,11 @@ controller.cambio_orden_POST = (req, res) => {
                     }, function (err) {
                         if (err) {
 
-                            console.log(err);
+                            //console.log(err);
 
                             return;
                         }
-                        console.log('mail sent');
+                        //console.log('mail sent');
                     });
                     //////////////////////////////////////////////////////////////////////////////////////
                 } else {
@@ -406,11 +415,11 @@ controller.cambio_orden_POST = (req, res) => {
                     }, function (err) {
                         if (err) {
 
-                            console.log(err);
+                            //console.log(err);
 
                             return;
                         }
-                        console.log('mail sent');
+                        //console.log('mail sent');
                     });
                 }
             });
