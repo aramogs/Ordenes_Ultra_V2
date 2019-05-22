@@ -131,33 +131,33 @@ controller.guardar_orden_POST = (req, res) => {
 
     db.query(`SELECT MAX(id_orden) AS id FROM ordenes`, function (err, result5, fields) {
         if (err) throw err;
-        id=result5[0].id+1;
-        
+        id = result5[0].id + 1;
 
 
-    //Enviar Correos
-    app.mailer.send('email.ejs', {
-        to: '',
-        subject: 'Ordenes Utra',
-        id_orden: id,
-        creador: empleado,
-        gafete: gafete,
-        maquina: maquina,
-        descripcion: descripcion,
-        fecha: new Date(),
-        clave: clave
 
-    }, function (err) {
-        if (err) {
+        //Enviar Correos
+        app.mailer.send('email.ejs', {
+            to: '',
+            subject: 'Ordenes Utra',
+            id_orden: id,
+            creador: empleado,
+            gafete: gafete,
+            maquina: maquina,
+            descripcion: descripcion,
+            fecha: new Date(),
+            clave: clave
 
-            console.log(err);
+        }, function (err) {
+            if (err) {
 
-            return;
-        }
-        console.log('mail sent');
+                console.log(err);
+
+                return;
+            }
+            console.log('mail sent');
+        });
+
     });
-
-});
 
 };
 
@@ -399,7 +399,7 @@ controller.dashboard_POST = (req, res) => {
 
     selectedMonth = req.body.month_selected
     selectedYear = req.body.year_selected
-    selectedDepartment = req.body.department_selected    
+    selectedDepartment = req.body.department_selected
 
     db.query(`SELECT COUNT(*) AS abiertas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND departamento = ${selectedDepartment} AND status ="Abierta" `, function (err, result2, fields) {
         if (err) throw err;
@@ -417,8 +417,7 @@ controller.dashboard_POST = (req, res) => {
                 AND MONTH(ordenes.fecha_hora) = ${selectedMonth}  
                 AND YEAR(ordenes.fecha_hora) = ${selectedYear} 
                 AND departamento.id_departamento = "${selectedDepartment}"
-<<<<<<< HEAD
-                GROUP by ordenes.parte_afectada
+                GROUP by ordenes.maquina
                 `,
                         function (err, result6, fields) {
                             if (err) throw err;
@@ -428,53 +427,18 @@ controller.dashboard_POST = (req, res) => {
                             ordenesAtendidas = result3[0].atendidas
                             ordenesCerradas = result4[0].cerradas
                             ordenesDepartamento = result5[0].nombre
-                            ordenesSeleccionadas = result6
-
+                            ordenesSeleccion = result6
 
                             res.render('dashboard_view.ejs', {
-                                data: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas, ordenesDepartamento, ordenesSeleccionadas, selectedMonth, selectedYear }
+                                data: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas, ordenesDepartamento, ordenesSeleccion, selectedMonth, selectedYear }
                             });
                         });
-=======
-                GROUP by ordenes.maquina
-                `, 
-                function (err, result6, fields) {
-                    if (err) throw err;
-                    
-                  
-                    ordenesAbiertas = result2[0].abiertas
-                    ordenesAtendidas = result3[0].atendidas
-                    ordenesCerradas = result4[0].cerradas
-                    ordenesDepartamento = result5[0].nombre
-                    ordenesSeleccion = result6
-                    
-                    res.render('dashboard_view.ejs', {
-                        data: { ordenesAbiertas,ordenesAtendidas,ordenesCerradas,ordenesDepartamento,ordenesSeleccion,selectedMonth,selectedYear }
-                    });
->>>>>>> d021471619dfc35bc56f51455e8ab179088a88bd
                 });
             });
         });
     });
 };
 
-function email() {
-    app.mailer.send('email', {
-        to: 'cisco.morales.27@gmail.com',
-        subject: 'Ordenes Utra',
-        user: 'Juan Perez',
-
-
-    }, function (err) {
-        if (err) {
-
-            console.log(err);
-
-            return;
-        }
-        console.log('mail sent');
-    });
-}
 
 
 
