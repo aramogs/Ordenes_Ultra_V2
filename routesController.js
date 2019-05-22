@@ -2,6 +2,13 @@
 const db = require('./public/db/conn');
 const controller = {};
 
+//Require mailer
+const express = require('express');
+const app = express();
+mail_config = require('./public/email/conn.js');
+var mailer = require('express-mailer');
+mailer.extend(app, mail_config);
+
 // Index GET
 controller.index_GET = (req, res) => {
     res.render('index.ejs');
@@ -57,7 +64,7 @@ controller.crear_orden2_POST = (req, res) => {
     departamento = (req.body.departamento);
     maquina = (req.body.maquina)
     nombreEmpleado = (req.body.empleado)
-    numeroEmpleado = (req.body.gafete)
+    numeroEmpleado = (req.body.gafete);
 
     db.query(`SELECT familia FROM maquinas WHERE nombre= '${maquina}'`, (err, result2, fields) => {
         if (err) throw err;
@@ -71,13 +78,16 @@ controller.crear_orden2_POST = (req, res) => {
             });
         });
     });
+
 };
 
 //POST a guardar_orden despues de crear orden2
 controller.guardar_orden_POST = (req, res) => {
+
     empleado = (req.body.empleado)
     gafete = (req.body.gafete)
     departamento = (req.body.departamento)
+    parteAfectada = (req.body.componente)
     maquina = (req.body.maquina)
     turno = (req.body.turno)
     grupo = (req.body.grupo)
@@ -86,29 +96,69 @@ controller.guardar_orden_POST = (req, res) => {
     clave = Math.floor(Math.random() * 10000);
 
     db.query(`SELECT id_maquina FROM maquinas WHERE nombre ='${maquina}'`, function (err, result1, fields) {
+
         if (err) throw err;
-
-        db.query(`SELECT id_departamento FROM departamento WHERE nombre='${departamento}'`, function (err, result2, fields) {
+        db.query(`SELECT familia FROM maquinas WHERE nombre ='${maquina}'`, function (err, result4, fields) {
             if (err) throw err;
+            familia = result4[0].familia
+            db.query(`SELECT id_componente FROM areas_componentes_afectados WHERE componente ='${parteAfectada}' AND familia_maquina='${familia}'`, function (err, result3, fields) {
+                if (err) throw err;
+                componente = result3[0].id_componente;
 
-            db.query(`INSERT INTO ordenes (departamento, maquina, parte_afectada, descripcion_problema, 
-        reporto, usuario_dominio, email, turno, grupo,  fecha_hora, clave, status, tipo_orden)
-        VALUES( '${result2[0].id_departamento}', '${result1[0].id_maquina}', '157', '${descripcion}', 
-        '${gafete}', '${empleado}', '${empleado + '@tristone.com'}', '${turno}', '${grupo}', NOW() , '${clave}', 
-        'Abierta', 'Correctivo')`, (err, result, fields) => {
+                db.query(`SELECT id_departamento FROM departamento WHERE nombre='${departamento}'`, function (err, result2, fields) {
                     if (err) throw err;
 
-                    db.query(`SELECT id_orden FROM ordenes WHERE clave = ${clave}`, (err, result2, fields) => {
-                        id_orden = result2[0].id_orden;
-                        if (err) throw err;
+                    db.query(`INSERT INTO ordenes (departamento, maquina, parte_afectada, descripcion_problema, 
+        reporto, usuario_dominio, email, turno, grupo,  fecha_hora, clave, status, tipo_orden)
+        VALUES( '${result2[0].id_departamento}', '${result1[0].id_maquina}', '${componente}', '${descripcion}', 
+        '${gafete}', '${empleado}', '${empleado + '@tristone.com'}', '${turno}', '${grupo}', NOW() , '${clave}', 
+        'Abierta', 'Correctivo')`, (err, result, fields) => {
+                            if (err) throw err;
 
-                        res.render('guardar_orden.ejs', {
-                            data: { departamento, maquina, turno, grupo, descripcion, clave, id_orden }
+                            db.query(`SELECT id_orden FROM ordenes WHERE clave = ${clave}`, (err, result2, fields) => {
+                                id_orden = result2[0].id_orden;
+                                if (err) throw err;
+
+                                res.render('guardar_orden.ejs', {
+                                    data: { departamento, maquina, turno, grupo, descripcion, clave, id_orden }
+                                });
+                            });
                         });
-                    });
                 });
-        });
+            });
+        })
     });
+
+    db.query(`SELECT MAX(id_orden) AS id FROM ordenes`, function (err, result5, fields) {
+        if (err) throw err;
+        id=result5[0].id+1;
+        
+
+
+    //Enviar Correos
+    app.mailer.send('email.ejs', {
+        to: '',
+        subject: 'Ordenes Utra',
+        id_orden: id,
+        creador: empleado,
+        gafete: gafete,
+        maquina: maquina,
+        descripcion: descripcion,
+        fecha: new Date(),
+        clave: clave
+
+    }, function (err) {
+        if (err) {
+
+            console.log(err);
+
+            return;
+        }
+        console.log('mail sent');
+    });
+
+});
+
 };
 
 //Get tabla ordenes
@@ -345,7 +395,7 @@ controller.dashboard_GET = (req, res) => {
 
 
 controller.dashboard_POST = (req, res) => {
-    
+
 
     selectedMonth = req.body.month_selected
     selectedYear = req.body.year_selected
@@ -359,7 +409,7 @@ controller.dashboard_POST = (req, res) => {
                 if (err) throw err;
                 db.query(`SELECT nombre FROM departamento WHERE id_departamento = ${selectedDepartment} `, function (err, result5, fields) {
                     if (err) throw err;
-                db.query(`
+                    db.query(`
                 SELECT COUNT(id_orden) AS parte_afectada_count, maquinas.nombre as maquina, departamento.nombre as departamento , ordenes.tiempo_muerto
                 FROM otplus.ordenes, otplus.maquinas, otplus.departamento 
                 WHERE ordenes.maquina = maquinas.id_maquina 
@@ -368,27 +418,45 @@ controller.dashboard_POST = (req, res) => {
                 AND YEAR(ordenes.fecha_hora) = ${selectedYear} 
                 AND departamento.id_departamento = "${selectedDepartment}"
                 GROUP by ordenes.parte_afectada
-                `, 
-                function (err, result6, fields) {
-                    if (err) throw err;
-                    
-                  
-                    ordenesAbiertas = result2[0].abiertas
-                    ordenesAtendidas = result3[0].atendidas
-                    ordenesCerradas = result4[0].cerradas
-                    ordenesDepartamento = result5[0].nombre
-                    ordenesSeleccionadas = result6
+                `,
+                        function (err, result6, fields) {
+                            if (err) throw err;
 
-                    
-                    res.render('dashboard_view.ejs', {
-                        data: { ordenesAbiertas,ordenesAtendidas,ordenesCerradas,ordenesDepartamento,ordenesSeleccionadas,selectedMonth,selectedYear }
-                    });
+
+                            ordenesAbiertas = result2[0].abiertas
+                            ordenesAtendidas = result3[0].atendidas
+                            ordenesCerradas = result4[0].cerradas
+                            ordenesDepartamento = result5[0].nombre
+                            ordenesSeleccionadas = result6
+
+
+                            res.render('dashboard_view.ejs', {
+                                data: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas, ordenesDepartamento, ordenesSeleccionadas, selectedMonth, selectedYear }
+                            });
+                        });
                 });
             });
         });
     });
-});
 };
+
+function email() {
+    app.mailer.send('email', {
+        to: 'cisco.morales.27@gmail.com',
+        subject: 'Ordenes Utra',
+        user: 'Juan Perez',
+
+
+    }, function (err) {
+        if (err) {
+
+            console.log(err);
+
+            return;
+        }
+        console.log('mail sent');
+    });
+}
 
 
 

@@ -45,3 +45,14 @@ node_modules/
 # Resources #
 ######################
 public/resources
+public/resources/
+
+# Email #
+######################
+public/email/
+
+
+
+
+
+
