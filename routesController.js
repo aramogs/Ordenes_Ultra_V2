@@ -349,11 +349,7 @@ controller.dashboard_POST = (req, res) => {
 
     selectedMonth = req.body.month_selected
     selectedYear = req.body.year_selected
-    selectedDepartment = req.body.department_selected
-
-  console.log(selectedDepartment);
-  
-    
+    selectedDepartment = req.body.department_selected    
 
     db.query(`SELECT COUNT(*) AS abiertas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND departamento = ${selectedDepartment} AND status ="Abierta" `, function (err, result2, fields) {
         if (err) throw err;
