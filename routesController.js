@@ -137,7 +137,7 @@ controller.guardar_orden_POST = (req, res) => {
 
     //Enviar Correos
     app.mailer.send('email.ejs', {
-        to: '',
+        to: 'cisco.morales.27@gmail.com',
         subject: 'Ordenes Utra',
         id_orden: id,
         creador: empleado,
