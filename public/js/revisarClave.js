@@ -13,7 +13,6 @@
     if(txtclave.value==clave){
       lblclave.classList.remove('text-danger');
       msg.classList.remove('text-danger');
-      $(btnAtender).prop("disabled",false);
       $(btnCerrar).prop("disabled",false);
       txtclave.classList.remove('border-danger');
       txtclave.classList.add('border-success');
@@ -25,7 +24,6 @@
     }else{
       lblclave.classList.remove('text-success');
       msg.classList.remove('text-success');
-      $(btnAtender).prop("disabled",true);
       $(btnCerrar).prop("disabled",true);
       txtclave.classList.remove('alert-success');
       txtclave.classList.add('border-danger');

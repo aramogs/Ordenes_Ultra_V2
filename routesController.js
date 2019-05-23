@@ -130,15 +130,14 @@ controller.guardar_orden_POST = (req, res) => {
 
     //Enviar Correo
     db.query(`SELECT MAX(id_orden) AS id FROM ordenes`, function (err, result5, fields) {
-        if (err) throw err;
-        db.query(`SELECT Email from empleados WHERE Gafete= ${gafete}`, function (err, result6, fields) {
-            if (err) throw err;
-            email = result6[0].Email;
+        if (err) throw err;   
             id = result5[0].id + 1;
+
+            
 
             to = 'cisco.morales.27@gmail.com'//'email';
             cc = '';
-            subject = 'Orden Utra Creada';
+            subject = 'Nueva Orden Utra: '+id;
             status = 'Abierta';
             color = '#b30000';
             id_orden = id;
@@ -160,10 +159,7 @@ controller.guardar_orden_POST = (req, res) => {
                 fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
             }
 
-            funcion.sendEmail(dataEmail);
-
-
-        });
+            funcion.sendEmail(dataEmail);      
 
     });
 
@@ -294,8 +290,9 @@ controller.cambio_orden_POST = (req, res) => {
         var endDate = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
         var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
         var usuarioAtendida = result[0].usuario_atendida;
-        var accionAtendidaC= result[0].acciones_atendida;
+        var accionAtendidaC = result[0].acciones_atendida;
         var tipoOrden = result[0].tipo_orden
+
         //Info correo
         reporto = result[0].reporto;
         maquina = result[0].maquina;
@@ -308,13 +305,14 @@ controller.cambio_orden_POST = (req, res) => {
                 nombremaquina = result3[0].nombre;
 
                 //Si es de tipo correctivo actualiza segundos //////////////////////////////////////////////////////////
-                if(tipoOrden == "Otra"){
-                    seconds = 0                   
-                }else{          
+                if (tipoOrden == "Otra") {
+                    seconds = 0
+                } else {
                     seconds = seconds
                 }
 
                 if (accionTomada == "Atendida") {
+                    clave_cierre = '';
                     db.query(`UPDATE ordenes SET 
               status= "${accionTomada}",
               acciones_atendida= "${actividades}" ,
@@ -324,41 +322,46 @@ controller.cambio_orden_POST = (req, res) => {
               WHERE id_orden = ${id_orden}`, function (err, result, fields) {
                             if (err) throw err;
 
+
                             res.render('cambio_orden.ejs', {
                                 data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
                             });
                         });
 
+                    gafeteEnviar = reporto;
+                    for (var i = 0; i < 2; i++) {
+                        funcion.buscarCorreo(gafeteEnviar, function (data) {
 
+                            to = data;
+                            cc = '';
+                            subject = 'Orden Utra: ' + id_orden + ' -Atendida-';
+                            status = 'Atendida';
+                            color = '#3498db';
+                            id_orden = id_orden;
+                            creador = nombrereporto;
+                            gafete = reporto;
+                            maquina = nombremaquina;
+                            descripcion = descripcion;
+                            fecha = ordenFecha;
+                            clave = clave_cierre;
+                            empleadoAtendida = nombreEmpleado;
+                            fechaAtendida = formatted_current_date;
+                            accionAtendida = actividades;
+                            empleadoCerrada = '';
+                            fechaCerrada = '';
+                            accionCerrada = '';
 
+                            dataEmail = {
+                                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                                fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                            }
 
+                            funcion.sendEmail(dataEmail);
+                        })
 
-
-                    to = funcion.buscarCorreo(reporto,function(data){   });
-                    cc = funcion.buscarCorreo(numeroEmpleado,function(data){   });
-                    subject = 'Orden Utra Atendida';
-                    status = 'Atendida';
-                    color = '#3498db';
-                    id_orden = id_orden;
-                    creador = nombrereporto;
-                    gafete = reporto;
-                    maquina = nombremaquina;
-                    descripcion = descripcion;
-                    fecha = ordenFecha;
-                    clave = '';
-                    empleadoAtendida = nombreEmpleado;
-                    fechaAtendida = formatted_current_date;
-                    accionAtendida = actividades;
-                    empleadoCerrada = '';
-                    fechaCerrada = '';
-                    accionCerrada = '';
-
-                    dataEmail = {
-                        to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
-                        fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                        gafeteEnviar = numeroEmpleado;
                     }
 
-                    funcion.sendEmail(dataEmail);
 
                 } else {
                     db.query(`UPDATE ordenes SET 
@@ -375,31 +378,39 @@ controller.cambio_orden_POST = (req, res) => {
                             });
                         });
 
-                    to = 'cisco.morales.27@gmail.com';
-                    cc = '';
-                    subject = 'Orden Utra Cerrada';
-                    status = 'Cerrada';
-                    color = '#0e943b';
-                    id_orden = id_orden;
-                    creador = nombrereporto;
-                    gafete = reporto;
-                    maquina = nombremaquina;
-                    descripcion = descripcion;
-                    fecha = ordenFecha;
-                    clave = '';
-                    empleadoAtendida = usuarioAtendida;
-                    fechaAtendida = fechaAtendida;
-                    accionAtendida = accionAtendidaC;
-                    empleadoCerrada = nombreEmpleado;
-                    fechaCerrada = formatted_current_date;
-                    accionCerrada = actividades;
+                    gafeteEnviar = reporto;
+                    for (var i = 0; i < 2; i++) {
+                        funcion.buscarCorreo(gafeteEnviar, function (data) {
 
-                    dataEmail = {
-                        to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
-                        fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                            to = data;
+                            cc = '';
+                            subject = 'Orden Utra: ' + id_orden + ' -Cerrada-';
+                            status = 'Cerrada';
+                            color = '#0e943b';
+                            id_orden = id_orden;
+                            creador = nombrereporto;
+                            gafete = reporto;
+                            maquina = nombremaquina;
+                            descripcion = descripcion;
+                            fecha = ordenFecha;
+                            clave = clave_cierre;
+                            empleadoAtendida = usuarioAtendida;
+                            fechaAtendida = fechaAtendida;
+                            accionAtendida = accionAtendidaC;
+                            empleadoCerrada = nombreEmpleado;
+                            fechaCerrada = formatted_current_date;
+                            accionCerrada = actividades;
+
+                            dataEmail = {
+                                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                                fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                            }
+
+                            funcion.sendEmail(dataEmail);
+                        })
+
+                        gafeteEnviar = numeroEmpleado;
                     }
-
-                    funcion.sendEmail(dataEmail);
 
                 }
             });
