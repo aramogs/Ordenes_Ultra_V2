@@ -39,11 +39,11 @@ funcion.sendEmail= (dataEmail)=>{
     }, function (err) {
         if (err) {
 
-            console.log(err);
+           // console.log(err);
 
             return;
         }
-        console.log('mail sent');
+       // console.log('mail sent');
     });
 
 };

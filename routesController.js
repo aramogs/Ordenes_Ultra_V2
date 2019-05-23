@@ -136,7 +136,6 @@ controller.guardar_orden_POST = (req, res) => {
             email = result6[0].Email;
             id = result5[0].id + 1;
 
-<<<<<<< HEAD
             to = 'cisco.morales.27@gmail.com'//'email';
             cc = '';
             subject = 'Orden Utra Creada';
@@ -163,42 +162,6 @@ controller.guardar_orden_POST = (req, res) => {
 
             funcion.sendEmail(dataEmail);
 
-=======
-            //Enviar Correos
-            app.mailer.send('email.ejs', {
-                //Info General
-                to: '',
-                subject: 'Orden Utra Creada',
-                status: 'Abierta',
-                color: '#b30000',
-                id_orden: id,
-                creador: empleado,
-                gafete: gafete,
-                maquina: maquina,
-                descripcion: descripcion,
-                fecha: new Date(),
-                clave: clave,
-
-                //Info Atendida
-                empleadoAtendida: '',
-                fechaAtendida: '',
-                accionAtendida: '',
-
-                //Info cerrada
-                empleadoCerrada: '',
-                fechaCerrada: '',
-                accionCerrada: '',
-
-            }, function (err) {
-                if (err) {
-
-                   // console.log(err);
-
-                    return;
-                }
-                //console.log('mail sent');
-            });
->>>>>>> 1d64bf973db67c035cd174d5fc356b3e777a00a2
 
         });
 
@@ -342,7 +305,12 @@ controller.cambio_orden_POST = (req, res) => {
             db.query(`SELECT nombre FROM maquinas WHERE id_maquina= ${maquina}`, function (err, result3, fields) {
                 nombremaquina = result3[0].nombre;
 
-                ////////////
+                //Si es de tipo correctivo actualiza segundos //////////////////////////////////////////////////////////
+                if(tipoOrden == "Otra"){
+                    seconds = 0                   
+                }else{          
+                    seconds = seconds
+                }
 
                 if (accionTomada == "Atendida") {
                     db.query(`UPDATE ordenes SET 
@@ -360,7 +328,10 @@ controller.cambio_orden_POST = (req, res) => {
                         });
 
 
-console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
+
+
+
+
                     to = funcion.buscarCorreo(reporto,function(data){   });
                     cc = funcion.buscarCorreo(numeroEmpleado,function(data){   });
                     subject = 'Orden Utra Atendida';
@@ -402,7 +373,6 @@ console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
                             });
                         });
 
-<<<<<<< HEAD
                     to = 'cisco.morales.27@gmail.com';
                     cc = '';
                     subject = 'Orden Utra Cerrada';
@@ -429,50 +399,11 @@ console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
 
                     funcion.sendEmail(dataEmail);
 
-=======
-                    ///Enviar Correo Cerrada//////////////////////////////////////////////////////////
-                    app.mailer.send('email.ejs', {
-                        //Info General
-                        to: '',
-                        subject: 'Orden Utra Cerrada',
-                        status: 'Cerrada',
-                        color: '#0e943b',
-                        id_orden: id_orden,
-                        creador: nombrereporto,
-                        gafete: reporto,
-                        maquina: nombremaquina,
-                        descripcion: descripcion,
-                        fecha: ordenFecha,
-                        clave: '',
-
-                        //Info Atendida
-                        empleadoAtendida: '',
-                        fechaAtendida: '',
-                        accionAtendida: '',
-
-                        //Info cerrada
-                        empleadoCerrada: nombreEmpleado,
-                        fechaCerrada: formatted_current_date,
-                        accionCerrada: actividades,
-
-                    }, function (err) {
-                        if (err) {
-
-                            //console.log(err);
-
-                            return;
-                        }
-                        //console.log('mail sent');
-                    });
->>>>>>> 1d64bf973db67c035cd174d5fc356b3e777a00a2
                 }
             });
 
         });
     })
-
-
-
 };
 
 //POST a historial apra generar tabla, primero revisa si el gafete existe
