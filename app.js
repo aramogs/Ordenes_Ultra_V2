@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const db = require('./public/db/conn');
 const bodyParser = require('body-parser');
-var mailer = require('express-mailer');
+const mailer = require('express-mailer');
 
 app.set('views',__dirname + '/views');
 app.set('view_engine', 'ejs');

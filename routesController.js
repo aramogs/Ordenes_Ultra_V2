@@ -307,12 +307,16 @@ controller.cambio_orden_POST = (req, res) => {
             db.query(`SELECT nombre FROM maquinas WHERE id_maquina= ${maquina}`, function (err, result3, fields) {
                 nombremaquina = result3[0].nombre;
 
+<<<<<<< HEAD
                 //Si es de tipo correctivo actualiza segundos //////////////////////////////////////////////////////////
                 if(tipoOrden == "Otra"){
                     seconds = 0                   
                 }else{          
                     seconds = seconds
                 }
+=======
+                ////////////
+>>>>>>> 7e6b921dd20d1f4391a75ef4cdf52c967a3f967f
 
                 if (accionTomada == "Atendida") {
                     db.query(`UPDATE ordenes SET 
