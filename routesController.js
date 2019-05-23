@@ -293,6 +293,8 @@ controller.cambio_orden_POST = (req, res) => {
         var startDate = new Date(ordenFecha);//Fecha en que se creo la orden de trabajo
         var endDate = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
         var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
+        var usuarioAtendida = result[0].usuario_atendida;
+        var accionAtendidaC= result[0].acciones_atendida;
         var tipoOrden = result[0].tipo_orden
         //Info correo
         reporto = result[0].reporto;
