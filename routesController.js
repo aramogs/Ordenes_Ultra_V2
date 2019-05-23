@@ -360,7 +360,6 @@ controller.cambio_orden_POST = (req, res) => {
                         });
 
 
-<<<<<<< HEAD
 console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
                     to = funcion.buscarCorreo(reporto,function(data){   });
                     cc = funcion.buscarCorreo(numeroEmpleado,function(data){   });
@@ -388,43 +387,6 @@ console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
 
                     funcion.sendEmail(dataEmail);
 
-=======
-                    //Enviar Correo Atendida//////////////////////////////////////////////////////////
-                    app.mailer.send('email.ejs', {
-                        //Info General
-                        to: '',
-                        subject: 'Orden Utra Atendida',
-                        status: 'Atendida',
-                        color: '#3498db',
-                        id_orden: id_orden,
-                        creador: nombrereporto,
-                        gafete: reporto,
-                        maquina: nombremaquina,
-                        descripcion: descripcion,
-                        fecha: ordenFecha,
-                        clave: '',
-
-                        //Info Atendida
-                        empleadoAtendida: nombrereporto,
-                        fechaAtendida: '',
-                        accionAtendida: actividades,
-
-                        //Info cerrada
-                        empleadoCerrada: '',
-                        fechaCerrada: '',
-                        accionCerrada: '',
-
-                    }, function (err) {
-                        if (err) {
-
-                            //console.log(err);
-
-                            return;
-                        }
-                        //console.log('mail sent');
-                    });
-                    //////////////////////////////////////////////////////////////////////////////////////
->>>>>>> 1d64bf973db67c035cd174d5fc356b3e777a00a2
                 } else {
                     db.query(`UPDATE ordenes SET 
                 status= "${accionTomada}",

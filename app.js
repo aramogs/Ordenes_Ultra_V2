@@ -17,7 +17,9 @@ app.get(db);
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(routes);
 
-module.exports= mailer;
+
 app.listen(3000, function() {
     console.log('Server on port 3000!');
   });
+
+  module.exports= mailer;
