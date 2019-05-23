@@ -3,11 +3,7 @@ const db = require('./public/db/conn');
 const controller = {};
 
 //Require mailer
-const express = require('express');
-const app = express();
-mail_config = require('./public/email/conn.js');
-var mailer = require('express-mailer');
-mailer.extend(app, mail_config);
+const funcion = require('./public/js/controllerFunctions');
 
 // Index GET
 controller.index_GET = (req, res) => {
@@ -84,7 +80,7 @@ controller.crear_orden2_POST = (req, res) => {
 //POST a guardar_orden despues de crear orden2
 controller.guardar_orden_POST = (req, res) => {
 
-    
+
     empleado = (req.body.empleado)
     gafete = (req.body.gafete)
     departamento = (req.body.departamento)
@@ -130,6 +126,7 @@ controller.guardar_orden_POST = (req, res) => {
         })
     });
 
+    //Enviar Correo
     db.query(`SELECT MAX(id_orden) AS id FROM ordenes`, function (err, result5, fields) {
         if (err) throw err;
         db.query(`SELECT Email from empleados WHERE Gafete= ${gafete}`, function (err, result6, fields) {
@@ -137,40 +134,32 @@ controller.guardar_orden_POST = (req, res) => {
             email = result6[0].Email;
             id = result5[0].id + 1;
 
-            //Enviar Correos
-            app.mailer.send('email.ejs', {
-                //Info General
-                to: '',
-                subject: 'Orden Utra Creada',
-                status: 'Abierta',
-                color: '#b30000',
-                id_orden: id,
-                creador: empleado,
-                gafete: gafete,
-                maquina: maquina,
-                descripcion: descripcion,
-                fecha: new Date(),
-                clave: clave,
+            to = 'cisco.morales.27@gmail.com'//'email';
+            cc = '';
+            subject = 'Orden Utra Creada';
+            status = 'Abierta';
+            color = '#b30000';
+            id_orden = id;
+            creador = empleado;
+            gafete = gafete;
+            maquina = maquina;
+            descripcion = descripcion;
+            fecha = new Date();
+            clave = clave;
+            empleadoAtendida = '';
+            fechaAtendida = '';
+            accionAtendida = '';
+            empleadoCerrada = '';
+            fechaCerrada = '';
+            accionCerrada = '';
 
-                //Info Atendida
-                empleadoAtendida: '',
-                fechaAtendida: '',
-                accionAtendida: '',
+            dataEmail = {
+                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+            }
 
-                //Info cerrada
-                empleadoCerrada: '',
-                fechaCerrada: '',
-                accionCerrada: '',
+            funcion.sendEmail(dataEmail);
 
-            }, function (err) {
-                if (err) {
-
-                    console.log(err);
-
-                    return;
-                }
-                console.log('mail sent');
-            });
 
         });
 
@@ -302,15 +291,19 @@ controller.cambio_orden_POST = (req, res) => {
         var startDate = new Date(ordenFecha);//Fecha en que se creo la orden de trabajo
         var endDate = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
         var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
-
+        var usuarioAtendida = result[0].usuario_atendida;
+        var accionAtendidaC= result[0].acciones_atendida;
         //Info correo
         reporto = result[0].reporto;
         maquina = result[0].maquina;
         descripcion = result[0].descripcion_problema;
+        fechaAtendida = result[0].fecha_hora_atendida;
+        accionesAtendida = result[0].acciones_atendida;
         db.query(`SELECT Nombre FROM empleados WHERE Gafete= ${reporto}`, function (err, result2, fields) {
             nombrereporto = result2[0].Nombre;
             db.query(`SELECT nombre FROM maquinas WHERE id_maquina= ${maquina}`, function (err, result3, fields) {
                 nombremaquina = result3[0].nombre;
+
                 ////////////
 
                 if (accionTomada == "Atendida") {
@@ -328,41 +321,34 @@ controller.cambio_orden_POST = (req, res) => {
                             });
                         });
 
-                    //Enviar Correo Atendida//////////////////////////////////////////////////////////
-                    app.mailer.send('email.ejs', {
-                        //Info General
-                        to: '',
-                        subject: 'Orden Utra Atendida',
-                        status: 'Atendida',
-                        color: '#3498db',
-                        id_orden: id_orden,
-                        creador: nombrereporto,
-                        gafete: reporto,
-                        maquina: nombremaquina,
-                        descripcion: descripcion,
-                        fecha: ordenFecha,
-                        clave: '',
 
-                        //Info Atendida
-                        empleadoAtendida: nombrereporto,
-                        fechaAtendida: '',
-                        accionAtendida: actividades,
+console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
+                    to = funcion.buscarCorreo(reporto,function(data){   });
+                    cc = funcion.buscarCorreo(numeroEmpleado,function(data){   });
+                    subject = 'Orden Utra Atendida';
+                    status = 'Atendida';
+                    color = '#3498db';
+                    id_orden = id_orden;
+                    creador = nombrereporto;
+                    gafete = reporto;
+                    maquina = nombremaquina;
+                    descripcion = descripcion;
+                    fecha = ordenFecha;
+                    clave = '';
+                    empleadoAtendida = nombreEmpleado;
+                    fechaAtendida = formatted_current_date;
+                    accionAtendida = actividades;
+                    empleadoCerrada = '';
+                    fechaCerrada = '';
+                    accionCerrada = '';
 
-                        //Info cerrada
-                        empleadoCerrada: '',
-                        fechaCerrada: '',
-                        accionCerrada: '',
+                    dataEmail = {
+                        to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                        fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                    }
 
-                    }, function (err) {
-                        if (err) {
+                    funcion.sendEmail(dataEmail);
 
-                            console.log(err);
-
-                            return;
-                        }
-                        console.log('mail sent');
-                    });
-                    //////////////////////////////////////////////////////////////////////////////////////
                 } else {
                     db.query(`UPDATE ordenes SET 
                 status= "${accionTomada}",
@@ -378,43 +364,36 @@ controller.cambio_orden_POST = (req, res) => {
                             });
                         });
 
-                    ///Enviar Correo Cerrada//////////////////////////////////////////////////////////
-                    app.mailer.send('email.ejs', {
-                        //Info General
-                        to: '',
-                        subject: 'Orden Utra Cerrada',
-                        status: 'Cerrada',
-                        color: '#0e943b',
-                        id_orden: id_orden,
-                        creador: nombrereporto,
-                        gafete: reporto,
-                        maquina: nombremaquina,
-                        descripcion: descripcion,
-                        fecha: ordenFecha,
-                        clave: '',
+                    to = 'cisco.morales.27@gmail.com';
+                    cc = '';
+                    subject = 'Orden Utra Cerrada';
+                    status = 'Cerrada';
+                    color = '#0e943b';
+                    id_orden = id_orden;
+                    creador = nombrereporto;
+                    gafete = reporto;
+                    maquina = nombremaquina;
+                    descripcion = descripcion;
+                    fecha = ordenFecha;
+                    clave = '';
+                    empleadoAtendida = usuarioAtendida;
+                    fechaAtendida = fechaAtendida;
+                    accionAtendida = accionAtendidaC;
+                    empleadoCerrada = nombreEmpleado;
+                    fechaCerrada = formatted_current_date;
+                    accionCerrada = actividades;
 
-                        //Info Atendida
-                        empleadoAtendida: '',
-                        fechaAtendida: '',
-                        accionAtendida: '',
+                    dataEmail = {
+                        to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                        fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                    }
 
-                        //Info cerrada
-                        empleadoCerrada: nombreEmpleado,
-                        fechaCerrada: formatted_current_date,
-                        accionCerrada: actividades,
+                    funcion.sendEmail(dataEmail);
 
-                    }, function (err) {
-                        if (err) {
-
-                            console.log(err);
-
-                            return;
-                        }
-                        console.log('mail sent');
-                    });
                 }
             });
-        })
+
+        });
     })
 
 
@@ -539,7 +518,6 @@ controller.dashboard_POST = (req, res) => {
         });
     });
 };
-
 
 
 
