@@ -91,6 +91,7 @@ controller.guardar_orden_POST = (req, res) => {
     descripcion = (req.body.descripcion)
     archivo = (req.body.archivo)
     clave = Math.floor(Math.random() * 10000);
+    tipoOrden = (req.body.tmuerto)
 
     db.query(`SELECT id_maquina FROM maquinas WHERE nombre ='${maquina}'`, function (err, result1, fields) {
 
@@ -105,11 +106,12 @@ controller.guardar_orden_POST = (req, res) => {
                 db.query(`SELECT id_departamento FROM departamento WHERE nombre='${departamento}'`, function (err, result2, fields) {
                     if (err) throw err;
 
-                    db.query(`INSERT INTO ordenes (departamento, maquina, parte_afectada, descripcion_problema, 
-        reporto, usuario_dominio, email, turno, grupo,  fecha_hora, clave, status, tipo_orden)
-        VALUES( '${result2[0].id_departamento}', '${result1[0].id_maquina}', '${componente}', '${descripcion}', 
-        '${gafete}', '${empleado}', '${empleado + '@tristone.com'}', '${turno}', '${grupo}', NOW() , '${clave}', 
-        'Abierta', 'Correctivo')`, (err, result, fields) => {
+                    db.query(`
+                    INSERT INTO ordenes (departamento, maquina, parte_afectada, descripcion_problema, 
+                    reporto, usuario_dominio, email, turno, grupo,  fecha_hora, clave, status, tipo_orden)
+                    VALUES( '${result2[0].id_departamento}', '${result1[0].id_maquina}', '${componente}', '${descripcion}', 
+                    '${gafete}', '${empleado}', '${empleado + '@tristone.com'}', '${turno}', '${grupo}', NOW() , '${clave}', 
+                    'Abierta', '${tipoOrden}')`, (err, result, fields) => {
                             if (err) throw err;
 
                             db.query(`SELECT id_orden FROM ordenes WHERE clave = ${clave}`, (err, result2, fields) => {
@@ -134,6 +136,7 @@ controller.guardar_orden_POST = (req, res) => {
             email = result6[0].Email;
             id = result5[0].id + 1;
 
+<<<<<<< HEAD
             to = 'cisco.morales.27@gmail.com'//'email';
             cc = '';
             subject = 'Orden Utra Creada';
@@ -160,6 +163,42 @@ controller.guardar_orden_POST = (req, res) => {
 
             funcion.sendEmail(dataEmail);
 
+=======
+            //Enviar Correos
+            app.mailer.send('email.ejs', {
+                //Info General
+                to: '',
+                subject: 'Orden Utra Creada',
+                status: 'Abierta',
+                color: '#b30000',
+                id_orden: id,
+                creador: empleado,
+                gafete: gafete,
+                maquina: maquina,
+                descripcion: descripcion,
+                fecha: new Date(),
+                clave: clave,
+
+                //Info Atendida
+                empleadoAtendida: '',
+                fechaAtendida: '',
+                accionAtendida: '',
+
+                //Info cerrada
+                empleadoCerrada: '',
+                fechaCerrada: '',
+                accionCerrada: '',
+
+            }, function (err) {
+                if (err) {
+
+                   // console.log(err);
+
+                    return;
+                }
+                //console.log('mail sent');
+            });
+>>>>>>> 1d64bf973db67c035cd174d5fc356b3e777a00a2
 
         });
 
@@ -291,8 +330,7 @@ controller.cambio_orden_POST = (req, res) => {
         var startDate = new Date(ordenFecha);//Fecha en que se creo la orden de trabajo
         var endDate = new Date(current_date);//Fecha en la que se esta tendiendo la orden de trabajo, viene de cerrar_orden2(current_date)
         var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
-        var usuarioAtendida = result[0].usuario_atendida;
-        var accionAtendidaC= result[0].acciones_atendida;
+        var tipoOrden = result[0].tipo_orden
         //Info correo
         reporto = result[0].reporto;
         maquina = result[0].maquina;
@@ -304,7 +342,16 @@ controller.cambio_orden_POST = (req, res) => {
             db.query(`SELECT nombre FROM maquinas WHERE id_maquina= ${maquina}`, function (err, result3, fields) {
                 nombremaquina = result3[0].nombre;
 
+<<<<<<< HEAD
                 ////////////
+=======
+                //Si es de tipo correctivo actualiza segundos //////////////////////////////////////////////////////////
+                if(tipoOrden == "Otra"){
+                    seconds = 0                   
+                }else{          
+                    seconds = seconds
+                }
+>>>>>>> 1d64bf973db67c035cd174d5fc356b3e777a00a2
 
                 if (accionTomada == "Atendida") {
                     db.query(`UPDATE ordenes SET 
@@ -322,6 +369,7 @@ controller.cambio_orden_POST = (req, res) => {
                         });
 
 
+<<<<<<< HEAD
 console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
                     to = funcion.buscarCorreo(reporto,function(data){   });
                     cc = funcion.buscarCorreo(numeroEmpleado,function(data){   });
@@ -349,6 +397,43 @@ console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
 
                     funcion.sendEmail(dataEmail);
 
+=======
+                    //Enviar Correo Atendida//////////////////////////////////////////////////////////
+                    app.mailer.send('email.ejs', {
+                        //Info General
+                        to: '',
+                        subject: 'Orden Utra Atendida',
+                        status: 'Atendida',
+                        color: '#3498db',
+                        id_orden: id_orden,
+                        creador: nombrereporto,
+                        gafete: reporto,
+                        maquina: nombremaquina,
+                        descripcion: descripcion,
+                        fecha: ordenFecha,
+                        clave: '',
+
+                        //Info Atendida
+                        empleadoAtendida: nombrereporto,
+                        fechaAtendida: '',
+                        accionAtendida: actividades,
+
+                        //Info cerrada
+                        empleadoCerrada: '',
+                        fechaCerrada: '',
+                        accionCerrada: '',
+
+                    }, function (err) {
+                        if (err) {
+
+                            //console.log(err);
+
+                            return;
+                        }
+                        //console.log('mail sent');
+                    });
+                    //////////////////////////////////////////////////////////////////////////////////////
+>>>>>>> 1d64bf973db67c035cd174d5fc356b3e777a00a2
                 } else {
                     db.query(`UPDATE ordenes SET 
                 status= "${accionTomada}",
@@ -364,6 +449,7 @@ console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
                             });
                         });
 
+<<<<<<< HEAD
                     to = 'cisco.morales.27@gmail.com';
                     cc = '';
                     subject = 'Orden Utra Cerrada';
@@ -390,6 +476,42 @@ console.log(funcion.buscarCorreo(reporto,function(data){ return data  }));
 
                     funcion.sendEmail(dataEmail);
 
+=======
+                    ///Enviar Correo Cerrada//////////////////////////////////////////////////////////
+                    app.mailer.send('email.ejs', {
+                        //Info General
+                        to: '',
+                        subject: 'Orden Utra Cerrada',
+                        status: 'Cerrada',
+                        color: '#0e943b',
+                        id_orden: id_orden,
+                        creador: nombrereporto,
+                        gafete: reporto,
+                        maquina: nombremaquina,
+                        descripcion: descripcion,
+                        fecha: ordenFecha,
+                        clave: '',
+
+                        //Info Atendida
+                        empleadoAtendida: '',
+                        fechaAtendida: '',
+                        accionAtendida: '',
+
+                        //Info cerrada
+                        empleadoCerrada: nombreEmpleado,
+                        fechaCerrada: formatted_current_date,
+                        accionCerrada: actividades,
+
+                    }, function (err) {
+                        if (err) {
+
+                            //console.log(err);
+
+                            return;
+                        }
+                        //console.log('mail sent');
+                    });
+>>>>>>> 1d64bf973db67c035cd174d5fc356b3e777a00a2
                 }
             });
 
