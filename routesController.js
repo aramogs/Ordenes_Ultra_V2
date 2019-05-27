@@ -2,12 +2,14 @@
 const db = require('./public/db/conn');
 const controller = {};
 
-//Require mailer
+//Require Funciones
 const funcion = require('./public/js/controllerFunctions');
+const funcionE = require('./public/js/empleadosFunctions');
 
 // Index GET
 controller.index_GET = (req, res) => {
     res.render('index.ejs');
+
 };
 
 //GET Crear orden
@@ -27,25 +29,25 @@ controller.login = (req, res) => {
 controller.crear_orden_POST = (req, res) => {
     numeroEmpleado = req.body.user;
 
-    db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
+    funcionE.empleadosCount(numeroEmpleado, (err, count) => {
+
         if (err) {
             res.redirect('/login/crear_orden')
         } else {
 
-            if (count[0].count == 0) {
+            if (count == 0) {
                 res.redirect('/login/crear_orden')
             }
             else {
-
-                db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {
+                funcionE.empleadosNombre(numeroEmpleado, (err, result3) => {
                     if (err) throw err;
-                    db.query("SELECT * FROM departamento", function (err, result1, fields) {
+                    funcion.controllerDepartamentos((err, result1) => {
                         if (err) throw err;
-                        db.query("SELECT * FROM maquinas", function (err, result2, fields) {
+                        funcion.controllerMaquinas((err, result2) => {
                             if (err) throw err;
 
                             res.render('crear_orden.ejs', {
-                                data: result1, data2: result2, data3: result3[0].Nombre, data4: numeroEmpleado
+                                data: result1, data2: result2, data3: result3, data4: numeroEmpleado
                             });
                         });
                     });
@@ -62,11 +64,10 @@ controller.crear_orden2_POST = (req, res) => {
     nombreEmpleado = (req.body.empleado)
     numeroEmpleado = (req.body.gafete);
 
-    db.query(`SELECT familia FROM maquinas WHERE nombre= '${maquina}'`, (err, result2, fields) => {
+    funcion.controllerFamilia(maquina, (err, familia) => {
         if (err) throw err;
-        familia = result2[0].familia
 
-        db.query(`SELECT componente FROM areas_componentes_afectados WHERE familia_maquina = '${familia}'`, (err, result3, fields) => {
+        funcion.controllerComponentes(familia, (err, result3) => {
             if (err) throw err;
 
             res.render('crear_orden2.ejs', {
@@ -93,131 +94,163 @@ controller.guardar_orden_POST = (req, res) => {
     clave = Math.floor(Math.random() * 10000);
     tipoOrden = (req.body.tmuerto)
 
-    db.query(`SELECT id_maquina FROM maquinas WHERE nombre ='${maquina}'`, function (err, result1, fields) {
-
+    funcion.controllerIdMaquina(maquina, (err, id_maquina) => {
         if (err) throw err;
-        db.query(`SELECT familia FROM maquinas WHERE nombre ='${maquina}'`, function (err, result4, fields) {
-            if (err) throw err;
-            familia = result4[0].familia
-            db.query(`SELECT id_componente FROM areas_componentes_afectados WHERE componente ='${parteAfectada}' AND familia_maquina='${familia}'`, function (err, result3, fields) {
-                if (err) throw err;
-                componente = result3[0].id_componente;
 
-                db.query(`SELECT id_departamento FROM departamento WHERE nombre='${departamento}'`, function (err, result2, fields) {
+        funcion.controllerFamilia(maquina, (err, familia) => {
+            if (err) throw err;
+
+            funcion.controllerIdComponente(parteAfectada, familia, (err, componente) => {
+                if (err) throw err;
+
+                funcion.controllerIdDepartamento(departamento, (err, id_dep) => {
                     if (err) throw err;
 
-                    db.query(`
-                    INSERT INTO ordenes (departamento, maquina, parte_afectada, descripcion_problema, 
-                    reporto, usuario_dominio, email, turno, grupo,  fecha_hora, clave, status, tipo_orden)
-                    VALUES( '${result2[0].id_departamento}', '${result1[0].id_maquina}', '${componente}', '${descripcion}', 
-                    '${gafete}', '${empleado}', '${empleado + '@tristone.com'}', '${turno}', '${grupo}', NOW() , '${clave}', 
-                    'Abierta', '${tipoOrden}')`, (err, result, fields) => {
+                    funcion.controllerInsertOrden(id_dep, id_maquina, componente, descripcion, gafete, empleado, turno, grupo, clave, tipoOrden, (err, result) => {
+                        if (err) throw err;
+
+                        funcion.controllerMaxIdOrden((err, result2) => {
+                            id_orden = result2[0].id;
                             if (err) throw err;
 
-                            db.query(`SELECT id_orden FROM ordenes WHERE clave = ${clave}`, (err, result2, fields) => {
-                                id_orden = result2[0].id_orden;
-                                if (err) throw err;
-
-                                res.render('guardar_orden.ejs', {
-                                    data: { departamento, maquina, turno, grupo, descripcion, clave, id_orden }
-                                });
+                            res.render('guardar_orden.ejs', {
+                                data: { departamento, maquina, turno, grupo, descripcion, clave, id_orden }
                             });
                         });
+                    });
                 });
             });
         })
     });
 
-    //Enviar Correo
-    db.query(`SELECT MAX(id_orden) AS id FROM ordenes`, function (err, result5, fields) {
-        if (err) throw err;   
+    //Enviar Correos
+    funcion.controllerIdDepartamento(departamento, (err, id_depE) => {
+        if (err) throw err;
+        funcion.controllerMaxIdOrden((err, result5) => {
+            if (err) throw err;
             id = result5[0].id + 1;
+            //Enviar Correo Empleados del Creador de Orden
+            funcionE.empleadosCorreo(gafete, (err, correo) => {
 
-            
+                to = correo;
+                cc = '';
+                subject = 'Nueva Orden Utra: ' + id;
+                status = 'Abierta';
+                color = '#b30000';
+                id_orden = id;
+                creador = empleado;
+                gafete = gafete;
+                maquina = maquina;
+                descripcion = descripcion;
+                fecha = new Date();
+                clave = clave;
+                empleadoAtendida = '';
+                fechaAtendida = '';
+                accionAtendida = '';
+                empleadoCerrada = '';
+                fechaCerrada = '';
+                accionCerrada = '';
 
-            to = 'cisco.morales.27@gmail.com'//'email';
-            cc = '';
-            subject = 'Nueva Orden Utra: '+id;
-            status = 'Abierta';
-            color = '#b30000';
-            id_orden = id;
-            creador = empleado;
-            gafete = gafete;
-            maquina = maquina;
-            descripcion = descripcion;
-            fecha = new Date();
-            clave = clave;
-            empleadoAtendida = '';
-            fechaAtendida = '';
-            accionAtendida = '';
-            empleadoCerrada = '';
-            fechaCerrada = '';
-            accionCerrada = '';
+                dataEmail = {
+                    to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                    fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                }
 
-            dataEmail = {
-                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
-                fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
-            }
+                funcion.sendEmail(dataEmail);
+            });
 
-            funcion.sendEmail(dataEmail);      
+            //Enviar Correo Empleados del Departamento
+            funcionE.empleadosAccess2((err, gafeteAcc) => {
+        console.log(gafeteAcc);
 
+                for (var i = 0; i < gafeteAcc.length; i++) {
+                    console.log('next1')
+                    funcionE.empleadosRevisarDepto(gafeteAcc[i].acc_id, (err, depto) => {
+                        console.log('nextdpt')
+                        if (depto == id_depE) {
+
+                            funcionE.empleadosCorreo(gafeteAcc[i].acc_id, (err, correo) => {
+
+
+                                to = correo;
+                                cc = '';
+                                subject = 'Nueva Orden Utra: ' + id;
+                                status = 'Abierta';
+                                color = '#b30000';
+                                id_orden = id;
+                                creador = empleado;
+                                gafete = gafete;
+                                maquina = maquina;
+                                descripcion = descripcion;
+                                fecha = new Date();
+                                clave = '';
+                                empleadoAtendida = '';
+                                fechaAtendida = '';
+                                accionAtendida = '';
+                                empleadoCerrada = '';
+                                fechaCerrada = '';
+                                accionCerrada = '';
+
+                                dataEmail = {
+                                    to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                                    fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                                }
+
+                                funcion.sendEmail(dataEmail);
+                            });
+                        }
+                    });
+                }
+            });
+        });
     });
-
 };
 
 //Get tabla ordenes
 controller.ordenes_GET = (req, res) => {
-    db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
-      WHERE (ordenes.departamento = departamento.id_departamento) 
-      AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) ORDER BY id_orden DESC`, function (err, result, fields) {
+
+    funcion.controllerTablaOrdenes((err, result) => {
+        if (err) throw err;
+
+        funcion.controllerCountOrdenesAll('abiertas', "Abierta", (err, result2) => {
             if (err) throw err;
-
-
-            db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta"`, function (err, result2, fields) {
+            funcion.controllerCountOrdenesAll('atendidas', "Atendida", (err, result3) => {
                 if (err) throw err;
-
-
-                db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="Atendida"`, function (err, result3, fields) {
+                funcion.controllerCountOrdenesAll('cerradas', "Cerrada", (err, result4) => {
                     if (err) throw err;
 
+                    ordenesAbiertas = result2[0].abiertas
+                    ordenesAtendidas = result3[0].atendidas
+                    ordenesCerradas = result4[0].cerradas
 
-                    db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="Cerrada"`, function (err, result4, fields) {
-                        if (err) throw err;
-
-                        ordenesAbiertas = result2[0].abiertas
-                        ordenesAtendidas = result3[0].atendidas
-                        ordenesCerradas = result4[0].cerradas
-
-                        res.render('ordenes.ejs', {
-                            data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }
-                        });
+                    res.render('ordenes.ejs', {
+                        data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }
                     });
                 });
             });
         });
+    });
 };
 
 //POST  a cerrar_orden despues de login, revisa primero si el Gafete existe
 controller.cerrar_orden_POST = (req, res) => {
     numeroEmpleado = req.body.user;
 
-    db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
+    funcionE.empleadosCount(numeroEmpleado, (err, count) => {
         if (err) {
             res.redirect('/login/cerrar_orden')
         } else {
 
-            if (count[0].count == 0) {
+            if (count == 0) {
                 res.redirect('/login/cerrar_orden')
             } else {
 
-                db.query(`SELECT Nombre FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, result3, fields) {
+                funcionE.empleadosNombre(numeroEmpleado, (err, nombreEmpleado) => {
                     if (err) throw err;
 
-                    db.query(`SELECT id_orden FROM ordenes WHERE status='Abierta' OR status='atendida'`, function (err, result4, fields) {
+                    funcion.controllerOrdenesAbiertas((err, result4) => {
                         if (err) throw err;
 
-
-                        nombreEmpleado = result3[0].Nombre;
 
                         res.render('cerrar_orden.ejs', {
                             data: numeroEmpleado, data2: nombreEmpleado, data3: result4
@@ -229,39 +262,39 @@ controller.cerrar_orden_POST = (req, res) => {
     });
 };
 
-//POST  cerrar_orden2 despues de cerrra_orden primero revisa si la orden existe 
+//POST  cerrar_orden2 despues de cerrra_orden primero revisa si la orden existe
 controller.cerrar_orden2_POST = (req, res) => {
 
     numeroEmpleado = req.body.numeroEmpleado;
     nombreEmpleado = req.body.nombreEmpleado;
     id_orden = req.body.id_orden;
 
-    db.query(`SELECT COUNT( * ) AS count FROM ordenes WHERE id_orden=${id_orden}`, function (err, count, fields) {
+    funcion.controllerCountOrdenes(id_orden, (err, count) => {
         if (err) {
             res.redirect('/')
         } else {
 
-            if (count[0].count == 0) {
+            if (count == 0) {
                 res.redirect('/')
             }
             else {
 
-                db.query(`SELECT status FROM ordenes WHERE id_orden=${id_orden}`, function (err, result2, fields) {
+                funcion.controllerStatusOrden(id_orden, (err, result2) => {
                     if (err) throw err;
                     status = result2[0].status
-                    db.query(`SELECT clave FROM ordenes WHERE id_orden=${id_orden}`, function (err, clave, fields) {
+
+                    funcion.controllerClaveOrden(id_orden, (err, clave) => {
                         if (err) throw err;
-                        id_clave = clave[0].clave
+                        id_clave = clave[0].clave;
 
-                        db.query(`SELECT * FROM ordenes,areas_componentes_afectados 
-                WHERE ordenes.id_orden = ${id_orden}
-                AND ordenes.parte_afectada = areas_componentes_afectados.id_componente`, function (err, result1, fields) {
+                        funcion.controllerParteAfectadaOrden(id_orden, (err, result1) => {
+                            if (err) throw err;
+                            parteAfectada = result1[0].componente
 
-                                parteAfectada = result1[0].componente
-                                res.render('cerrar_orden2.ejs', {
-                                    data: { numeroEmpleado, nombreEmpleado, id_orden, parteAfectada, id_clave, status }
-                                });
+                            res.render('cerrar_orden2.ejs', {
+                                data: { numeroEmpleado, nombreEmpleado, id_orden, parteAfectada, id_clave, status }
                             });
+                        });
                     });
                 });
             }
@@ -299,10 +332,10 @@ controller.cambio_orden_POST = (req, res) => {
         descripcion = result[0].descripcion_problema;
         fechaAtendida = result[0].fecha_hora_atendida;
         accionesAtendida = result[0].acciones_atendida;
-        db.query(`SELECT Nombre FROM empleados WHERE Gafete= ${reporto}`, function (err, result2, fields) {
-            nombrereporto = result2[0].Nombre;
-            db.query(`SELECT nombre FROM maquinas WHERE id_maquina= ${maquina}`, function (err, result3, fields) {
-                nombremaquina = result3[0].nombre;
+
+        funcionE.empleadosNombre(reporto, (err, nombrereporto) => {
+
+            funcion.controllerNombreMaquina(maquina, (err, nombremaquina) => {
 
                 //Si es de tipo correctivo actualiza segundos //////////////////////////////////////////////////////////
                 if (tipoOrden == "Otra") {
@@ -312,27 +345,21 @@ controller.cambio_orden_POST = (req, res) => {
                 }
 
                 if (accionTomada == "Atendida") {
+
                     clave_cierre = '';
-                    db.query(`UPDATE ordenes SET 
-              status= "${accionTomada}",
-              acciones_atendida= "${actividades}" ,
-              fecha_hora_atendida= "${formatted_current_date}" ,
-              tiempo_atendida= "${seconds}",
-              usuario_atendida= "${nombreEmpleado}" 
-              WHERE id_orden = ${id_orden}`, function (err, result, fields) {
-                            if (err) throw err;
+                    funcion.controllerUpdateOrdenA(accionTomada, actividades, formatted_current_date, seconds, nombreEmpleado, id_orden, (err, result) => {
+                        if (err) throw err;
 
-
-                            res.render('cambio_orden.ejs', {
-                                data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
-                            });
+                        res.render('cambio_orden.ejs', {
+                            data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
                         });
+                    });
 
                     gafeteEnviar = reporto;
                     for (var i = 0; i < 2; i++) {
-                        funcion.buscarCorreo(gafeteEnviar, function (data) {
+                        funcionE.empleadosCorreo(gafeteEnviar, (err, correo) => {
 
-                            to = data;
+                            to = correo;
                             cc = '';
                             subject = 'Orden Utra: ' + id_orden + ' -Atendida-';
                             status = 'Atendida';
@@ -364,25 +391,17 @@ controller.cambio_orden_POST = (req, res) => {
 
 
                 } else {
-                    db.query(`UPDATE ordenes SET 
-                status= "${accionTomada}",
-                fecha_hora_cierre= "${formatted_current_date}",
-                usuario_cierre= "${nombreEmpleado}",
-                acciones_cierre= "${actividades}",
-                tiempo_muerto= "${seconds}",
-                area_real_afectada= "NULL",
-                parte_real_afectada= "NULL"
-                WHERE id_orden = ${id_orden}`, function (err, result1, fields) {
-                            res.render('cambio_orden.ejs', {
-                                data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
-                            });
+                    funcion.controllerUpdateOrdenC(accionTomada, actividades, formatted_current_date, seconds, nombreEmpleado, id_orden, (err, result) => {
+                        res.render('cambio_orden.ejs', {
+                            data: { accionTomada, nombreEmpleado, numeroEmpleado, id_orden, formatted_current_date, clave_cierre, parteAfectada, actividades }
                         });
+                    });
 
                     gafeteEnviar = reporto;
                     for (var i = 0; i < 2; i++) {
-                        funcion.buscarCorreo(gafeteEnviar, function (data) {
+                        funcionE.empleadosCorreo(gafeteEnviar, (err, correo) => {
 
-                            to = data;
+                            to = correo;
                             cc = '';
                             subject = 'Orden Utra: ' + id_orden + ' -Cerrada-';
                             status = 'Cerrada';
@@ -423,68 +442,59 @@ controller.cambio_orden_POST = (req, res) => {
 controller.historial_POST = (req, res) => {
     numeroEmpleado = req.body.user;
 
-    db.query(`SELECT COUNT( * ) AS count FROM empleados WHERE Gafete=${numeroEmpleado}`, function (err, count, fields) {
+    funcion.controllerHisotrialOrdenes(numeroEmpleado, (err, result) => {
+        if (err) throw err;
 
-        db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
-                WHERE (ordenes.departamento = departamento.id_departamento) 
-                AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) AND (ordenes.reporto ="${numeroEmpleado}") ORDER BY id_orden DESC `, function (err, result, fields) {
+        funcion.controllerHistorialOrdenesStatus('abiertas', "Abierta", numeroEmpleado, (err, result2) => {
+            if (err) throw err;
+
+            funcion.controllerHistorialOrdenesStatus('atendidas', "Atendida", numeroEmpleado, (err, result3) => {
                 if (err) throw err;
 
-                db.query(`SELECT COUNT(*) AS abiertas FROM ordenes WHERE status ="Abierta" AND reporto ="${numeroEmpleado}"`, function (err, result2, fields) {
+                funcion.controllerHistorialOrdenesStatus('cerradas', "Cerrada", numeroEmpleado, (err, result4) => {
                     if (err) throw err;
 
-
-                    db.query(`SELECT COUNT(*) AS atendidas FROM ordenes WHERE status ="Atendida" AND reporto ="${numeroEmpleado}"`, function (err, result3, fields) {
-                        if (err) throw err;
-
-
-                        db.query(`SELECT COUNT(*) AS cerradas FROM ordenes WHERE status ="Cerrada" AND reporto ="${numeroEmpleado}"`, function (err, result4, fields) {
-                            if (err) throw err;
-
-                            ordenesAbiertas = result2[0].abiertas
-                            ordenesAtendidas = result3[0].atendidas
-                            ordenesCerradas = result4[0].cerradas
+                    ordenesAbiertas = result2[0].abiertas
+                    ordenesAtendidas = result3[0].atendidas
+                    ordenesCerradas = result4[0].cerradas
 
 
-                            res.render('historial.ejs', {
-                                data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }, data3: numeroEmpleado
-                            });
-                        });
+                    res.render('historial.ejs', {
+                        data: result, data2: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas }, data3: numeroEmpleado
                     });
                 });
             });
+        });
     });
+
 };
 
 //POST A revisar orden
 controller.revisar_POST = (req, res) => {
     id_orden = req.params.id
 
+    funcion.controllerRevisarOrden(id_orden, (err, result) => {
+        if (err) throw err;
 
-    db.query(`SELECT * FROM ordenes, departamento, areas_componentes_afectados 
-      WHERE (ordenes.departamento = departamento.id_departamento) 
-      AND(ordenes.parte_afectada= areas_componentes_afectados.id_componente) AND ordenes.id_orden = "${id_orden}"`, function (err, result, fields) {
-            if (err) throw err;
+        nombreEmpleado = result[0].usuario_dominio;
+        numeroEmpleado = result[0].reporto;
+        parteAfectada = result[0].componente;
+        descripcionProblema = result[0].descripcion_problema;
+        creacionFecha = result[0].fecha_hora; //Fecha sin formato
+        departamento = result[0].nombre;
+        nombrEncargado = result[0].usuario_atendida;
+        nombreCierre = result[0].usuario_cierre;
+        atendidaFecha = result[0].fecha_hora_atendida;
+        cierreFecha = result[0].fecha_hora_cierre;
+        accionAtendida = result[0].acciones_atendida;
+        accionCierre = result[0].acciones_cierre;
+        clave_cierre = result[0].clave;
+        ordenStatus = result[0].status
 
-            nombreEmpleado = result[0].usuario_dominio;
-            numeroEmpleado = result[0].reporto;
-            parteAfectada = result[0].componente;
-            descripcionProblema = result[0].descripcion_problema;
-            creacionFecha = result[0].fecha_hora; //Fecha sin formato
-            departamento = result[0].nombre;
-            nombrEncargado = result[0].usuario_atendida;
-            nombreCierre = result[0].usuario_cierre;
-            atendidaFecha = result[0].fecha_hora_atendida;
-            cierreFecha = result[0].fecha_hora_cierre;
-            accionAtendida = result[0].acciones_atendida;
-            accionCierre = result[0].acciones_cierre;
-            clave_cierre = result[0].clave;
-            ordenStatus = result[0].status
-
-            res.render('revisar.ejs', {
-                data: { id_orden, descripcionProblema, accionAtendida, accionCierre, nombreEmpleado, departamento, numeroEmpleado, creacionFecha, cierreFecha, clave_cierre, parteAfectada, nombrEncargado, nombreCierre, atendidaFecha, ordenStatus }
-            });
+        res.render('revisar.ejs', {
+            data: { id_orden, descripcionProblema, accionAtendida, accionCierre, nombreEmpleado, departamento, numeroEmpleado, creacionFecha, cierreFecha, clave_cierre, parteAfectada, nombrEncargado, nombreCierre, atendidaFecha, ordenStatus }
         });
+    });
 };
 
 // Dashboard GET
@@ -500,38 +510,32 @@ controller.dashboard_POST = (req, res) => {
     selectedYear = req.body.year_selected
     selectedDepartment = req.body.department_selected
 
-    db.query(`SELECT COUNT(*) AS abiertas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND departamento = ${selectedDepartment} AND status ="Abierta" `, function (err, result2, fields) {
+
+    funcion.controllerDashCount('abiertas', selectedMonth, selectedYear, selectedDepartment, "Abierta", (err, result2) => {
         if (err) throw err;
-        db.query(`SELECT COUNT(*) AS atendidas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND departamento = ${selectedDepartment} AND status ="Atendida"`, function (err, result3, fields) {
+
+        funcion.controllerDashCount('atendidas', selectedMonth, selectedYear, selectedDepartment, "Atendida", (err, result3) => {
             if (err) throw err;
-            db.query(`SELECT COUNT(*) AS cerradas FROM ordenes  WHERE MONTH(fecha_hora) = ${selectedMonth} AND  YEAR(fecha_hora) = ${selectedYear} AND departamento = ${selectedDepartment} AND status ="Cerrada"`, function (err, result4, fields) {
+
+            funcion.controllerDashCount('cerradas', selectedMonth, selectedYear, selectedDepartment, "Cerrada", (err, result4) => {
                 if (err) throw err;
-                db.query(`SELECT nombre FROM departamento WHERE id_departamento = ${selectedDepartment} `, function (err, result5, fields) {
+
+                funcion.controllerNombreDepartamento(selectedDepartment, (err, result5) => {
                     if (err) throw err;
-                    db.query(`
-                SELECT COUNT(id_orden) AS parte_afectada_count, maquinas.nombre as maquina, departamento.nombre as departamento , ordenes.tiempo_muerto
-                FROM otplus.ordenes, otplus.maquinas, otplus.departamento 
-                WHERE ordenes.maquina = maquinas.id_maquina 
-                AND ordenes.departamento = departamento.id_departamento 
-                AND MONTH(ordenes.fecha_hora) = ${selectedMonth}  
-                AND YEAR(ordenes.fecha_hora) = ${selectedYear} 
-                AND departamento.id_departamento = "${selectedDepartment}"
-                GROUP by ordenes.maquina
-                `,
-                        function (err, result6, fields) {
-                            if (err) throw err;
 
+                    funcion.controllerDashSeleccion(selectedMonth, selectedYear, selectedDepartment, (err, result6) => {
+                        if (err) throw err;
 
-                            ordenesAbiertas = result2[0].abiertas
-                            ordenesAtendidas = result3[0].atendidas
-                            ordenesCerradas = result4[0].cerradas
-                            ordenesDepartamento = result5[0].nombre
-                            ordenesSeleccion = result6
+                        ordenesAbiertas = result2[0].abiertas
+                        ordenesAtendidas = result3[0].atendidas
+                        ordenesCerradas = result4[0].cerradas
+                        ordenesDepartamento = result5[0].nombre
+                        ordenesSeleccion = result6
 
-                            res.render('dashboard_view.ejs', {
-                                data: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas, ordenesDepartamento, ordenesSeleccion, selectedMonth, selectedYear }
-                            });
+                        res.render('dashboard_view.ejs', {
+                            data: { ordenesAbiertas, ordenesAtendidas, ordenesCerradas, ordenesDepartamento, ordenesSeleccion, selectedMonth, selectedYear }
                         });
+                    });
                 });
             });
         });
