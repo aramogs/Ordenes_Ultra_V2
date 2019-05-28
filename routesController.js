@@ -28,8 +28,7 @@ controller.login = (req, res) => {
 //POST a crear_orden despues de login primero revisa si el Gafete existe 
 controller.crear_orden_POST = (req, res) => {
     numeroEmpleado = req.body.user;
-
-    funcionE.empleadosCount(numeroEmpleado, (err, count) => {
+    funcionE.empleadosRevisarAccess1(numeroEmpleado, (err, count) => {
 
         if (err) {
             res.redirect('/login/crear_orden')
@@ -143,7 +142,7 @@ controller.guardar_orden_POST = (req, res) => {
                 maquina = maquina;
                 descripcion = descripcion;
                 fecha = new Date();
-                clave = clave;
+                eclave = clave;
                 empleadoAtendida = '';
                 fechaAtendida = '';
                 accionAtendida = '';
@@ -152,7 +151,7 @@ controller.guardar_orden_POST = (req, res) => {
                 accionCerrada = '';
 
                 dataEmail = {
-                    to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                    to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, eclave, empleadoAtendida,
                     fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
                 }
 
@@ -161,43 +160,41 @@ controller.guardar_orden_POST = (req, res) => {
 
             //Enviar Correo Empleados del Departamento
             funcionE.empleadosAccess2((err, gafeteAcc) => {
-        console.log(gafeteAcc);
 
                 for (var i = 0; i < gafeteAcc.length; i++) {
-                    console.log('next1')
-                    funcionE.empleadosRevisarDepto(gafeteAcc[i].acc_id, (err, depto) => {
-                        console.log('nextdpt')
-                        if (depto == id_depE) {
 
-                            funcionE.empleadosCorreo(gafeteAcc[i].acc_id, (err, correo) => {
+                    funcionE.empleadosCorreoDep(gafeteAcc[i].acc_id, id_depE, (err, correo) => {
+
+                        if (correo != '') {
+                            console.log(correo[0].emp_correo)
 
 
-                                to = correo;
-                                cc = '';
-                                subject = 'Nueva Orden Utra: ' + id;
-                                status = 'Abierta';
-                                color = '#b30000';
-                                id_orden = id;
-                                creador = empleado;
-                                gafete = gafete;
-                                maquina = maquina;
-                                descripcion = descripcion;
-                                fecha = new Date();
-                                clave = '';
-                                empleadoAtendida = '';
-                                fechaAtendida = '';
-                                accionAtendida = '';
-                                empleadoCerrada = '';
-                                fechaCerrada = '';
-                                accionCerrada = '';
+                            to = correo[0].emp_correo;
+                            cc = '';
+                            subject = 'Nueva Orden Utra: ' + id;
+                            status = 'Abierta';
+                            color = '#b30000';
+                            id_orden = id;
+                            creador = empleado;
+                            gafete = gafete;
+                            maquina = maquina;
+                            descripcion = descripcion;
+                            fecha = new Date();
+                            eclave = '';
+                            empleadoAtendida = '';
+                            fechaAtendida = '';
+                            accionAtendida = '';
+                            empleadoCerrada = '';
+                            fechaCerrada = '';
+                            accionCerrada = '';
 
-                                dataEmail = {
-                                    to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
-                                    fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
-                                }
+                            dataEmail = {
+                                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, eclave, empleadoAtendida,
+                                fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
+                            }
 
-                                funcion.sendEmail(dataEmail);
-                            });
+                            funcion.sendEmail(dataEmail);
+
                         }
                     });
                 }
@@ -235,8 +232,8 @@ controller.ordenes_GET = (req, res) => {
 //POST  a cerrar_orden despues de login, revisa primero si el Gafete existe
 controller.cerrar_orden_POST = (req, res) => {
     numeroEmpleado = req.body.user;
-
-    funcionE.empleadosCount(numeroEmpleado, (err, count) => {
+    const acc_ultra=2;
+    funcionE.empleadosRevisarAccess2(numeroEmpleado,acc_ultra, (err, count) => {
         if (err) {
             res.redirect('/login/cerrar_orden')
         } else {
@@ -370,7 +367,7 @@ controller.cambio_orden_POST = (req, res) => {
                             maquina = nombremaquina;
                             descripcion = descripcion;
                             fecha = ordenFecha;
-                            clave = clave_cierre;
+                            eclave = clave_cierre;
                             empleadoAtendida = nombreEmpleado;
                             fechaAtendida = formatted_current_date;
                             accionAtendida = actividades;
@@ -379,7 +376,7 @@ controller.cambio_orden_POST = (req, res) => {
                             accionCerrada = '';
 
                             dataEmail = {
-                                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, eclave, empleadoAtendida,
                                 fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
                             }
 
@@ -412,7 +409,7 @@ controller.cambio_orden_POST = (req, res) => {
                             maquina = nombremaquina;
                             descripcion = descripcion;
                             fecha = ordenFecha;
-                            clave = clave_cierre;
+                            eclave = clave_cierre;
                             empleadoAtendida = usuarioAtendida;
                             fechaAtendida = fechaAtendida;
                             accionAtendida = accionAtendidaC;
@@ -421,7 +418,7 @@ controller.cambio_orden_POST = (req, res) => {
                             accionCerrada = actividades;
 
                             dataEmail = {
-                                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, clave, empleadoAtendida,
+                                to, cc, subject, status, color, id_orden, creador, gafete, maquina, descripcion, fecha, eclave, empleadoAtendida,
                                 fechaAtendida, accionAtendida, empleadoCerrada, fechaCerrada, accionCerrada
                             }
 

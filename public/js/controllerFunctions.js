@@ -24,7 +24,7 @@ funcion.sendEmail= (dataEmail)=>{
         maquina: dataEmail.maquina,
         descripcion: dataEmail.descripcion,
         fecha: dataEmail.fecha,
-        clave: dataEmail.clave,
+        eclave: dataEmail.eclave,
 
         //Info Atendida
         empleadoAtendida: dataEmail.empleadoAtendida,
