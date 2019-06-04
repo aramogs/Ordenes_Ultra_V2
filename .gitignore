@@ -51,10 +51,14 @@ public/resources/
 ######################
 public/email/
 
-# Email #
+# Base de datos #
 ######################
 public/db/
 
+# IIS Node #
+######################
+/iisnode
+iisnode/
 
 
 
